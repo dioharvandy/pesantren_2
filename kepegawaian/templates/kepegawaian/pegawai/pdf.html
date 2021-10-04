@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <style type="text/css">
+        @page {
+            size: A4 landscape;
+            margin-left: 1.58cm;
+            margin-top: 1.18cm;
+            margin-right: 1.18cm;
+            margin-bottom: 1.18cm;
+            @frame footer_frame { /* Another static Frame */
+                  -pdf-frame-content: footer_content;
+                  right: -400pt; width: 512pt; bottom:  0.75cm; height: 20pt;
+                  }
+
+        }
+        img.img{
+          width: 80px;
+          zoom: 120%;
+        }
+        h1,h2{
+          font-family: 'Times New Roman';
+        }
+        h1{
+            margin: 0;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 7;
+        } 
+        h2{
+            margin: 0;
+            padding-bottom: 25px;
+            text-align: center;
+            font-size: 6;
+        }
+        #tables {
+          font-family: 'Verdana';
+          font-weight: bolder;
+          border-collapse: collapse;
+          width: 100%;
+          font-size: 7px;
+          
+
+        }
+        #tables td, #tables th {
+          border: 0.5px solid rgb(63, 63, 63);
+        }
+
+        #tables th {
+          text-align: center;
+          background-color: #00b06f;
+          color: white;
+          padding-top: 3px;
+          padding-bottom: 1px;
+        }
+        #tables td{
+          text-align: center;
+          padding-top: 3px;
+        }
+        table{
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: 5px;
+          background-color: #fff;
+          
+        }
+    </style>
+</head>
+<body>
+  <div id="footer_content">(c) - Halaman <pdf:pagenumber>
+    / <pdf:pagecount>
+  </div>
+  
+  <header >
+      <img class="img" src="kepegawaian/AdminLTE/dist/img/shinealfalah.png" alt="">
+      <h1>Data Pegawai Yayasan Shine Al-falah</h1>
+      <h2>Tanggal {{ today | date:"d / F / Y" }}</h2>
+  </header>
+
+        <table id="tables">
+              <tr>
+                <th class="no" style="width:20px">No</th>
+                <th style="width:180px">Nama Pegawai</th>
+                <th style="width:110px">NUPY</th>
+                <th style="width:110px">Tempat Tanggal Lahir</th>
+                <th style="width:60px">Jenis Kelamin</th>
+                <th style="width:190px">Alamat</th>
+                <th style="width:65px">Nomor Telpon</th>
+                <th style="width:65px">Tanggal Masuk</th>
+                <th style="width:120px">Foto</th>
+              </tr>
+            {% for pegawai in pegawais %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{pegawai.nama_pegawai}}</td>
+                <td>{{pegawai.nupy}}</td>
+                <td >{{pegawai.tempat_lahir}} {{pegawai.tanggal_lahir}}</td>
+                <td>{{pegawai.get_jenis_kelamin_display}}</td>
+                <td>{{pegawai.alamat}}</td>
+                <td>{{pegawai.no_telpon}}</td>
+                <td>{{pegawai.tanggal_masuk}}</td>
+                <td style="padding-bottom: 3px;"><img src="media/{{pegawai.foto}}" width="90" height="100" alt=""></td>
+              </tr>
+            {% endfor %}
+          </table>     
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <style type="text/css">
+        @page {
+            size: A4 landscape;
+            margin-left: 1.58cm;
+            margin-top: 1.18cm;
+            margin-right: 1.18cm;
+            margin-bottom: 1.18cm;
+            @frame footer_frame { /* Another static Frame */
+                  -pdf-frame-content: footer_content;
+                  right: -400pt; width: 512pt; bottom: 0.75cm; height: 20pt;
+                  }
+
+        }
+        img.img{
+          width: 80px;
+          zoom: 120%;
+        }
+        h1,h2{
+          font-family: 'Times New Roman';
+        }
+        h1{
+            margin: 0;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 7;
+        } 
+        h2{
+            margin: 0;
+            padding-bottom: 25px;
+            text-align: center;
+            font-size: 6;
+        }
+        #tables {
+          font-family: 'Verdana';
+          font-weight: bolder;
+          border-collapse: collapse;
+          width: 100%;
+          font-size: 7px;
+          
+
+        }
+        #tables td, #tables th {
+          border: 0.5px solid rgb(63, 63, 63);
+        }
+
+        #tables th {
+          text-align: center;
+          background-color: #00b06f;
+          color: white;
+          padding-top: 3px;
+          padding-bottom: 1px;
+        }
+        #tables td{
+          text-align: center;
+          padding-top: 3px;
+        }
+        table{
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: 5px;
+          background-color: #fff;
+          
+        }
+    </style>
+</head>
+<body>
+  <div id="footer_content">(c) - Halaman <pdf:pagenumber>
+    / <pdf:pagecount>
+  </div>
+  
+  <header >
+      <img class="img" src="kepegawaian/AdminLTE/dist/img/shinealfalah.png" alt="">
+      <h1>Data Jabatan Pegawai <strong>Aktif</strong> Yayasan Shine Al-falah</h1>
+      <h2>Tanggal {{ today | date:"d / F / Y" }}</h2>
+  </header>
+
+        <table id="tables">
+              <tr>
+                <th style="width:180px">Nama Pegawai</th>
+                <th style="width:100px">NUPY</th>
+                <th style="width:110px">Tempat Tanggal Lahir</th>
+                <th style="width:70px">Jenis Kelamin</th>
+                <th style="width:185px">Alamat</th>
+                <th style="width:80px">Nomor Telpon</th>
+                <th style="width:75px">Tanggal Masuk</th>
+                <th style="width:140px">Jabatan</th>
+                <th style="width:90px">Tanggal Amanah</th>
+                <th style="width:120px">Foto</th>
+              </tr>
+              {% regroup jabatans by nupy as grouped %}                    
+              {% for group in grouped%}
+              {% for jabatan in group.list %}
+                <tr>
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ jabatan.nupy.nama_pegawai }}</td>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.nupy}}</a>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.tempat_lahir}} {{jabatan.nupy.tanggal_lahir}}</a>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.get_jenis_kelamin_display}}</a>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.alamat}}</a>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.no_telpon}}</a>{% endifchanged %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}">{{jabatan.nupy.tanggal_masuk}}</a>{% endifchanged %}
+                  <td>{{jabatan.jabatan.nama_jabatan}}</td>
+                  {% if jabatan.sk_mutasi_jabatan == NULL%}
+                  <td>{{jabatan.created_at|date:'d F Y'}}</td>
+                  {% else%}
+                  <td>{{jabatan.sk_mutasi_jabatan.tanggal_mutasi_jabatan}}</td>
+                  {% endif %}
+                  {% ifchanged %}<td rowspan="{{ group.list|length }}" style="padding-bottom: 3px;"><img src="media/{{jabatan.nupy.foto}}" alt="Foto Pegawai" width="70" height="80"></td>{% endifchanged %}
+                </tr>
+              {% endfor %}
+              {% endfor %}
+          </table>     
+</body>
+</html>

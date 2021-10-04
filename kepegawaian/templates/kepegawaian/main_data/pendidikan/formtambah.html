@@ -1,0 +1,12 @@
+<form action="{% url 'kepegawaian:addPendidikan'%}" method="POST" class="row g-3">
+    {% csrf_token %}
+    <div class="col-auto ">
+        <label for="inputPassword4">Nama Pendidikan</label>
+      </div>
+      <div class="col-auto ">
+        <input type="text" name="pendidikan" class="form-control" autofocus required>
+      </div>
+      <div class="col-auto ">
+        <button type="submit" class="btn btn-primary">Tambah</button>
+      </div>
+  </form>  

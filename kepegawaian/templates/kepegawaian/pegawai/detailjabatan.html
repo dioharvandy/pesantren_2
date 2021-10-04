@@ -1,0 +1,67 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Detail Jabatan {{object.nupy}} {% endblock title %}
+
+{% block navmenuopenpegawai %} menu-open {% endblock navmenuopenpegawai %}
+
+{% block navactivepegawai %} active {% endblock navactivepegawai %}
+
+{% block subnavactivepegawai %} active {% endblock subnavactivepegawai %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexPegawai' %}">Pegawai</a></li>
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:detailPegawai' object.nupy.nupy %}">Detail Pegawai</a></li>
+<li class="breadcrumb-item active">Detail Jabatan</li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+<section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+    <!-- Detail Pegawai -->
+    <div class="card card-outline card-success">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-briefcase mr-1"></i>
+                    Edit Status Jabatan
+                </h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <div class="tab-content p-0">
+                        <!-- Morris chart - Sales -->
+                    <div class="tab-pane active">
+                        <form action="{% url 'kepegawaian:editDetailJabatan'%} " method="POST">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                  <label for="tempat_lahir">Jabatan :</label>
+                                  <input type="hidden" name="jabatan_id" value="{{object.id_detail_jabatan}}">
+                                  <input type="hidden" name="nupy" value="{{object.nupy.nupy}}">
+                                  <input type="text" name="jabatan" class="form-control" disabled value="{{object.jabatan.nama_jabatan}}" required>
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label for="tanggal_lahir">No Surat Mutasi Jabatan :</label>
+                                  <input type="text" name="sk_mutasi_jabatan" class="form-control" disabled value="{{object.sk_mutasi_jabatan}}" required>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Status Jabatan :</label>
+                                    <select name="status_jabatan" class="form-control border-top-0 border-right-0 border-left-0">
+                                      <option value="1"{% if object.status_jabatan == "1" %} selected{% endif %}>Aktif</option>
+                                      <option value="2" {% if object.status_jabatan == "2" %} selected{% endif %}>Non Aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit"  onclick="return confirm('Edit Status Jabatan Pegawai: {{object.nupy}}?')" class="btn btn-success float-right">Edit Data</button>
+                        </form>
+                    </div> 
+                    </div>
+                </div><!-- /.card-body -->
+            </div>
+      <!-- /.card -->
+      <!-- Detail Jabatan -->
+</section>
+    <!-- /.Left col -->
+  </div>
+{% endblock content %}

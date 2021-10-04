@@ -1,0 +1,22 @@
+<form action="{% url 'kepegawaian:editJabatan'%}" method="POST" class="row g-3">
+  {% csrf_token %}
+  <input type="hidden" name="id_jabatan" value="{{object.id_jabatan}}">
+  <div class="col-auto ">
+      <label for="inputPassword4">Nama Jabatan</label>
+    </div>
+    <div class="col-auto ">
+      <input type="text" name="jabatan" class="form-control" value="{{object.nama_jabatan}}" autofocus required>
+    </div>
+    <div class="col-auto ">
+      <label for="inputPassword4">Gaji Pokok</label>
+    </div>
+    <div class="col-auto ">
+      <input type="number" value="{{object.gaji_pokok}}" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==8) return false;" name="gaji_pokok" class="form-control" required>
+      <figcaption class="blockquote-footer">
+        <small  class="text-muted">Berdasarkan Pertemuan, Jam atau Bulan</small>
+      </figcaption>
+    </div>
+    <div class="col-auto ">
+      <button type="submit" class="btn btn-success">Edit</button>
+    </div>
+</form> 

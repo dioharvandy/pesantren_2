@@ -1,0 +1,4 @@
+<option value="">Jabatan Lama</option>
+{% for jabatan in jabatans %}
+<option value="{{jabatan.jabatan_id}}">{{ jabatan.jabatan.nama_jabatan }}</option>
+{% endfor %}

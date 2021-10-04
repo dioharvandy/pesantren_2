@@ -1,0 +1,142 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Surat Mutasi Jabatan {% endblock title %}
+
+{% block nav-menu-open-mutasi-jabatan %} menu-open {% endblock nav-menu-open-mutasi-jabatan %}
+
+{% block nav-active-mutasi-jabatan %} active {% endblock nav-active-mutasi-jabatan %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexSkMutasiJabatan' %}">Surat Mutasi Jabatan</a></li>
+<li class="breadcrumb-item active">Detail Surat Mutasi Jabatan</li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+<section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+    <!-- Detail Pegawai -->
+    <div class="card card-outline card-success">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-file-alt mr-1"></i>
+                    Surat Mutasi Jabatan No : {{object.sk_mutasi_jabatan}}
+                </h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <div class="tab-content p-0">
+                        <!-- Morris chart - Sales -->
+                    <div class="tab-pane active">
+                        <p class="font-weight-bold">Tanggal Mutasi : {{object.tanggal_mutasi_jabatan}}</p>
+                        <p class="font-weight-bold">Keterangan Tambahan : {{object.ket_mutasi_jabatan}}</p>
+                    </div> 
+                    </div>
+                </div><!-- /.card-body -->
+            </div>
+        </div>
+      <!-- /.card -->
+    <!-- Detail Riwayat Pendidikan  -->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-users mr-1"></i>
+            Daftar Pegawai
+        </h3>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+            <div class="tab-content p-0">
+                <!-- Morris chart - Sales -->
+                <div class="tab-pane active" id="riwayat-pendidikan">
+
+                    <div class="app-table">
+                        <table class="table table-striped table-hover table-sm table-responsive-md">
+                          <thead>
+                            <tr>
+                              <th scope="col">No</th>
+                              <th scope="col">Nama Pegawai</th>
+                              <th scope="col">NUPY</th>
+                              <th scope="col">Jabatan Baru</th>
+                              <th scope="col" style="text-align: right;">Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for jabatan in jabatans %}
+                            <tr>
+                              <th scope="row">{{ forloop.counter }}</th>
+                              <td>{{jabatan.nupy.nama_pegawai}}</td>
+                              <td><a href="{% url 'kepegawaian:detailPegawai' jabatan.nupy.nupy %}" title="Detail Pegawai" class="ahover">{{jabatan.nupy.nupy}}</a></td>
+                              <td>{{jabatan.jabatan.nama_jabatan}}</td>
+                              <td style="text-align: right;">                 
+                                <form action="{% url 'kepegawaian:deleteDetailJabatan' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="sk_mutasi_jabatan" value="{{object.sk_mutasi_jabatan}}">
+                                    <input type="hidden" name="jabatan" value="{{jabatan.id_detail_jabatan}}">               
+                                    <button onclick="return confirm('Delete Mutasi Jabatan Pegawai: {{jabatan.nupy.nama_pegawai}}?')" title="Delete Mutasi Jabatan" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></button>
+                                  </form>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          <form action="{% url 'kepegawaian:addDetailJabatanWithSk' %}" method="POST" id="jabatanform" data-jabatans-url="{% url 'kepegawaian:ajax_load_jabatans' %}">
+                            {% csrf_token %}
+                              <tr>
+                                <th>#</th>
+                                <td><select name="nupy" id="id_jabatan" class="form-control" required>
+                                    <option value="">Daftar Pegawai</option>
+                                    {% for pegawai in pegawai_list %}
+                                    <option value="{{pegawai.nupy}}">{{pegawai.nama_pegawai}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                                <td>
+                                    <select name="jabatan_lama" id="id_jabatan_lama" class="form-control" required>
+                                      <option value="">Jabatan Lama</option>
+                                    </select>
+                                </td>
+                                <td><select name="jabatan_baru" class="form-control" required>
+                                    <option value="">Jabatan Baru</option>
+                                    {% for jabatans in jabatan_list %}
+                                    <option value="{{jabatans.id_jabatan}}">{{jabatans.nama_jabatan}}</option>
+                                    {% endfor %}
+                                  </select></td>
+                                  <input type="hidden" name="sk_mutasi_jabatan" value="{{object.sk_mutasi_jabatan}}">
+                                <td style="text-align: right;"><button type="submit" class="btn btn-primary">Tambah</button></td>
+                              </tr>
+                            </form>
+                          </tbody>
+                        </table>
+                      </div>
+                </div> 
+            </div>
+        </div><!-- /.card-body -->
+      </div>
+</div>
+    </div>
+    
+      <!-- Detail Jabatan -->
+</section>
+    <!-- /.Left col -->
+  </div>
+  
+{% endblock content %}
+
+{% block script %}
+    <script>
+        $("#id_jabatan").change(function () {
+        const url = $("#jabatanform").attr("data-jabatans-url");  // get the url of the `load_cities` view
+        const nupy = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'nupy': nupy       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#id_jabatan_lama").html(data);  // replace the contents of the city input with the data that came from the server
+            }
+        });
+
+    });
+    </script>
+{% endblock script %}

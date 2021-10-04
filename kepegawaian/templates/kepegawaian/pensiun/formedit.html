@@ -1,0 +1,24 @@
+<form action="{% url 'kepegawaian:editSkPensiun'%}" method="POST">
+    <input type="hidden" name="id_surat_pensiun" value="{{object.id_surat_pensiun}}">
+    <input type="hidden" name="sk_pensiun" value="{{object.sk_pensiun}}">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="tanggal">Nupy</label>
+            <input type="text" name="nupy" class="form-control"  value="{{object.nupy.nupy}}" readonly required>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="tanggal">Tanggal Pensiun</label>
+          <input type="date" name="tanggal_pensiun" class="form-control" value="{{object.tanggal_pensiun|date:'Y-m-d'}}" required>
+        </div>
+          <div class="form-group col-md-3">
+            <label for="tanggal">Usia(Th)</label>
+            <input type="number" name="usia" class="form-control" value="{{object.usia}}" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==2) return false;" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="ket_pensiun">Keterangan Tambahan</label>
+            <textarea name="ket_pensiun" class="form-control" rows="2" id="ket_pensiun" required>{{object.ket_pensiun}}</textarea>
+        </div>
+      </div>
+    <button type="submit" class="btn btn-success float-right">Edit Pensiun</button>
+  </form>

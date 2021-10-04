@@ -1,0 +1,43 @@
+{% extends "../../layouts/app.html" %}
+
+{% block title %} Pendidikan {% endblock title %}
+
+{% block navmenuopenriwayatpendidikan %} menu-open {% endblock navmenuopenriwayatpendidikan %}
+
+{% block navactiveriwayatpendidikan %} active {% endblock navactiveriwayatpendidikan %}
+
+{% block subnavactivedaftarpendidikan %} active {% endblock subnavactivedaftarpendidikan %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexPendidikan' %}">Pendidikan</a></li>
+<li class="breadcrumb-item active">Detail Pendidikan</li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+    <section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-user-graduate mr-1"></i>
+            Data Pendidikan : {{object.pendidikan}}
+          </h3>
+          </div><!-- /.card-header -->
+        <div class="card-body">
+          <div class="tab-content p-0">
+            <!-- Morris chart - Sales -->
+                <div class="tab-pane active" id="data-pendidikan">
+                    {% include "./formedit.html" %}
+                </div>
+          </div>
+        </div><!-- /.card-body -->
+      </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.Left col -->
+  </div>
+{% endblock content %}

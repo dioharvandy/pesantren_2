@@ -1,0 +1,52 @@
+<form action="{% url 'kepegawaian:editPegawai'%}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="col-md-12">
+        <label for="namapegawai"> Nama Pegawai :</label>
+        <input type="input" class="form-control border-top-0 border-right-0 border-left-0" name="nama_pegawai" value="{{object.nama_pegawai}}" id="namapegawai" required>
+      </div>
+      <input type="hidden" name="nupy" value="{{object.nupy}}" id="nupy" required>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label for="jenis_kelamin">Jenis Kelamin :</label>
+        <select id="jenis_kelamin" name="jenis_kelamin" class="form-control border-top-0 border-right-0 border-left-0">
+          <option value="L"{% if object.jenis_kelamin == "L" %} selected{% endif %}>Laki-Laki</option>
+          <option value="P" {% if object.jenis_kelamin == "P" %} selected{% endif %}>Perempuan</option>
+        </select>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="tempat_lahir">Tempat Lahir :</label>
+        <input type="text" name="tempat_lahir" class="form-control border-top-0 border-right-0 border-left-0" id="tempat_lahir" value="{{object.tempat_lahir}}" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="tanggal_lahir">Tanggal Lahir :</label>
+        <input type="date" name="tanggal_lahir" class="form-control border-top-0 border-right-0 border-left-0" id="tanggal_lahir" value="{{object.tanggal_lahir|date:'Y-m-d'}}" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="no_telpon">No Telpon :</label>
+        <input type="number" name="no_telpon" class="form-control border-top-0 border-right-0 border-left-0" id="no_telpon" value="{{object.no_telpon}}" required maxlength="13">
+      </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-9">
+          <label for="alamat">Alamat :</label>
+          <input type="text" name="alamat" class="form-control border-top-0 border-right-0 border-left-0" id="alamat" value="{{object.alamat}}" required>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="tanggal_masuk">Tanggal Masuk</label>
+          <input type="date" name="tanggal_masuk" class="form-control border-top-0 border-right-0 border-left-0" value="{{object.tanggal_masuk|date:'Y-m-d'}}" id="tanggal_masuk" required>
+        </div>
+      </div>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="foto">Foto Pegawai</label>
+        <input type="file" name="foto" class="form-control-file border-top-0 border-right-0 border-left-0" id="foto" accept="fotopegawai/*">
+      </div>
+    </div>
+    <div class="form-group">
+        <label for="ket_pegawai">Keterangan Tambahan</label>
+        <textarea name="ket_pegawai" id="ket_pegawai" class="form-control" rows="2" required>{{object.ket_pegawai}}</textarea>
+    </div>
+    <button type="submit"  onclick="return confirm('Edit Data Pegawai: {{object.nupy}}?')" class="btn btn-success float-right">Edit Data</button>
+  </form>

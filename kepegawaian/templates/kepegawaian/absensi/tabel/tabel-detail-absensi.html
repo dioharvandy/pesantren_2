@@ -1,0 +1,42 @@
+
+
+<div class="form-group col-md-3">
+  <p><span class="badge badge-success">Hadir</span> : {{hs|length}}</p>
+  <p><span class="badge badge-warning">Izin</span> : {{is|length}}</p>   
+  <p><span class="badge badge-info">Sakit</span> : {{ss|length}}</p> 
+  <p><span class="badge badge-danger">Absen</span> : {{as|length}}</p>
+</div>
+<table id="example1" class="table table-striped table-hover table-sm table-responsive-md">
+    <thead>
+      <tr>
+        <th scope="col">Tanggal Absen</th>
+        {% for absen in absensis %}
+        <td>{{absen.tanggal_absen.tanggal_absen|date:"j/M/y"}}</td>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody> 
+        <tr>
+            <th scope="col">Status Absen</th>
+            {% for absen in absensis %}
+            {% if absen.status_absen == "H" %}
+            <td>
+                <span class="badge badge-success">{{absen.get_status_absen_display}}</span>
+            </td>
+            {% elif absen.status_absen == "I" %}
+            <td>
+                <span class="badge badge-warning">{{absen.get_status_absen_display}}</span>
+            </td>
+            {% elif absen.status_absen == "S" %}
+            <td>
+                <span class="badge badge-info">{{absen.get_status_absen_display}}</span>
+            </td>
+            {% elif absen.status_absen == "A" %}
+            <td>
+                <span class="badge badge-danger">{{absen.get_status_absen_display}}</span>
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>              
+    </tbody>
+  </table>

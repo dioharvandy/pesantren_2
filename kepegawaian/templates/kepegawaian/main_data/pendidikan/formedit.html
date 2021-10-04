@@ -1,0 +1,13 @@
+<form action="{% url 'kepegawaian:editPendidikan'%}" method="POST" class="row g-3">
+    {% csrf_token %}
+    <div class="col-auto ">
+        <label for="inputPassword4">Nama Pendidikan</label>
+      </div>
+      <div class="col-auto ">
+        <input type="hidden" name="id_pendidikan" value="{{object.id_pendidikan}}">
+        <input type="text" name="pendidikan" class="form-control" value="{{object.pendidikan}}" autofocus required>
+      </div>
+      <div class="col-auto ">
+        <button type="submit" class="btn btn-success">Edit</button>
+      </div>
+  </form>  

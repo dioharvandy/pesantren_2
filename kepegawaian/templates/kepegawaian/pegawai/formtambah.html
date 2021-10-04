@@ -1,0 +1,68 @@
+<form action="{% url 'kepegawaian:addPegawai'%}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="namapegawai">Nama Pegawai</label>
+        <input type="input" class="form-control" name="nama_pegawai" id="namapegawai" autofocus placeholder="Nama Pegawai" required>
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputPassword4">NUPY</label>
+        <div class="form-row">
+            <div class="col">
+              <input type="text" name="nupy1" class="form-control" placeholder="PB" required maxlength="5">
+            </div>
+            <div class="col">
+              <input type="number" name="nupy2" class="form-control" placeholder="201212" required min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==7) return false;">
+            </div>
+            <div class="col">
+                <input type="number" name="nupy3" class="form-control" placeholder="01" required min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==3) return false;">
+            </div>
+            <div class="col">
+                <input type="number" name="nupy4" class="form-control" placeholder="001" required min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;">
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label for="jenis_kelamin">Jenis Kelamin</label>
+        <select id="jenis_kelamin" name="jenis_kelamin" class="form-control">
+          <option value="L">Laki-Laki</option>
+          <option value="P">Perempuan</option>
+        </select>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="tempat_lahir">Tempat Lahir</label>
+        <input type="text" name="tempat_lahir" class="form-control" id="tempat_lahir"  placeholder="Padang" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="tanggal_lahir">Tanggal Lahir</label>
+        <input type="date" name="tanggal_lahir" class="form-control" id="tanggal_lahir" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="no_telpon">No Telpon</label>
+        <input type="number" name="no_telpon" min="0" class="form-control" id="no_telpon"  placeholder="08xxxxxxxxx" required maxlength="13">
+      </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-9">
+          <label for="alamat">Alamat</label>
+          <input type="text" name="alamat" class="form-control" id="alamat"  placeholder="Ganting Parak Gadang, Padang Timur" required>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="tanggal_masuk">Tanggal Masuk</label>
+          <input type="date" name="tanggal_masuk" class="form-control" id="tanggal_masuk" required>
+        </div>
+      </div>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="foto">Foto Pegawai</label>
+        <input type="file" name="foto" class="form-control-file" id="foto">
+      </div>
+    </div>
+    <div class="form-group">
+        <label for="ket_pegawai">Keterangan Tambahan</label>
+        <textarea name="ket_pegawai" class="form-control" rows="2" id="ket_pegawai" placeholder="....." required></textarea>
+      </div>
+    <button type="submit" class="btn btn-primary float-right">Tambah Data</button>
+  </form>

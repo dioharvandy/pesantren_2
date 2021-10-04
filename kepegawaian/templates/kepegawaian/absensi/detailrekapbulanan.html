@@ -1,0 +1,74 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Tanggal Absen {% endblock title %}
+
+{% block nav-menu-open-absensi %} menu-open {% endblock %}
+
+{% block nav-active-absensi %} active {% endblock %}
+
+{% block subnavactiverekapbulanan %} active  {% endblock %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexRekapAbsensi' %}">Rekap Absensi Bulanan</a></li>
+<li class="breadcrumb-item active">Detail Rekap Absensi Bulanan</li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+    <section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+            <h3 class="card-title">
+                <img src="{{object.foto.url}}" alt="Foto Pegawai {{object.nupy}}" class="mr-3" width="10%">
+                {{object.nama_pegawai}} <strong>{{object.nupy}}</strong> {{object.lembaga}} 
+            </h3>
+            </div><!-- /.card-header -->
+            <div class="card-body">
+                <div class="tab-content p-0">
+                <div class="tab-pane active">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <form id="lembagaform" data-lembagas-url="{% url 'kepegawaian:ajax_load_pegawais_hasilrekapbulanan' %}">
+                                {% csrf_token %}
+                                <input type="month" name="lembaga" id="id_lembaga" class="form-control" value="{% now 'Y-m' %}">
+                                <input type="hidden" name="pegawai" id="id_pegawai" value="{{object.nupy}}">
+                              </form>
+                          </div>
+                    </div>
+                </div> 
+                <div class="app-table" id="id_lembaga_lama">
+                </div>
+                </div>
+            </div><!-- /.card-body -->
+        </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.Left col -->
+  </div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    $("#id_lembaga").change(function () {
+    const url = $("#lembagaform").attr("data-lembagas-url");  // get the url of the `load_cities` view
+    const bulan = $(this).val();  // get the selected country ID from the HTML input
+    const pegawai = $("#id_pegawai").val();
+
+    $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+        data: {
+            'bulan': bulan,
+            'pegawai' : pegawai       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+            $("#id_lembaga_lama").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+    });
+
+});
+</script>
+{% endblock script %}

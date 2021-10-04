@@ -1,0 +1,107 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Cuti {% endblock title %}
+
+{% block nav-menu-open-Cuti %} menu-open {% endblock nav-menu-open-Cuti %}
+
+{% block nav-active-Cuti %} active  {% endblock nav-active-Cuti %}
+
+{% block subnavactivepegawaicuti %} active  {% endblock subnavactivepegawaicuti %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexCuti' %}">Daftar Pegawai Cuti</a></li>
+<li class="breadcrumb-item active"></li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+    <section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-user-clock mr-1"></i>
+            Daftar Pegawai <strong>Aktif</strong> yang Sedang Cuti
+          </h3>
+          </div><!-- /.card-header -->
+        <div class="card-body">
+          <div class="tab-content p-0">
+            <!-- Morris chart - Sales -->
+                <div class="tab-pane active" id="data-pegawai">
+                    <div class="app-table">
+                      <table id="example1" class="table table-striped table-hover table-sm table-responsive-md">
+                        <thead>
+                          <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Nama Pegawai</th>
+                            <th scope="col">NUPY</th>
+                            <th scope="col">Lembaga</th>
+                            <th scope="col">Tanggal Mulai Cuti</th>
+                            <th scope="col">Tanggal Habis Cuti</th>
+                            <th scope="col">Keterangan Cuti</th>
+                          </tr>
+                        </thead>
+                        <tbody> 
+                         {% for cuti in object_list%}
+                         <tr>
+                              <th scope="row">{{ forloop.counter }}</th>
+                              <td>{{cuti.nupy.nama_pegawai}}</td>
+                              <td><a href="{% url 'kepegawaian:detailPegawai' cuti.nupy.nupy %}" title="Detail Pegawai" class="ahover">{{cuti.nupy.nupy}}</a></td>
+                              <td>{{cuti.nupy.lembaga.nama_lembaga}}</td>
+                              <td>{{cuti.tanggal_mulai_cuti}}</td>
+                              <td>{{cuti.tanggal_habis_cuti}}</td>
+                              <td>{{cuti.ket_cuti}}</td>
+                         </tr>
+                         {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  
+                  <div class="pagination-container">
+                    <nav aria-label="Page navigation" class="float-right">
+                      <ul class="pagination pagination-sm">
+            
+                        {% if page_obj.has_previous %}
+                          <li class="page-item">
+                              <!-- <a href="?page=1">&laquo; first</a> -->
+                              <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
+                          </li>
+                        {% endif %}
+          
+                        {% for num in page_obj.paginator.page_range %}
+                          {% if page_obj.number == num %}
+                          <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+          
+                        {% if page_obj.has_next %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&raquo;</span></a>
+                          </li>
+                        {% endif %}
+                      </ul>
+                    </nav>  
+                  </div>
+
+                </div> 
+          </div>
+        </div><!-- /.card-body -->
+      </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.Left col -->
+  </div>
+{% endblock content %}

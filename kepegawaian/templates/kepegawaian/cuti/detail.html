@@ -1,0 +1,123 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Surat Cuti {% endblock title %}
+
+{% block nav-menu-open-Cuti %} menu-open {% endblock nav-menu-open-Cuti %}
+
+{% block nav-active-Cuti %} active  {% endblock nav-active-Cuti %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexSuratCuti' %}">Surat Cuti</a></li>
+<li class="breadcrumb-item active">Detail Surat Cuti</li>
+{% endblock content-header-page %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+<section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+    <!-- Detail Pegawai -->
+    <div class="card card-outline card-success">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-envelope-open-text mr-1"></i>
+                    Surat Cuti No : {{object.no_surat}}
+                </h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <div class="tab-content p-0">
+                        <!-- Morris chart - Sales -->
+                    <div class="tab-pane active">
+                        <p class="font-weight-bold">Tanggal Surat Cuti : {{object.tanggal_surat_cuti}}</p>
+                    </div> 
+                    </div>
+                </div><!-- /.card-body -->
+            </div>
+        </div>
+      <!-- /.card -->
+    <!-- Detail Riwayat Pendidikan  -->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-users mr-1"></i>
+            Daftar Pegawai
+        </h3>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+            <div class="tab-content p-0">
+                <!-- Morris chart - Sales -->
+                <div class="tab-pane active" id="riwayat-pendidikan">
+                    <div class="app-table">
+                        <table class="table table-striped table-hover table-sm table-responsive-md">
+                          <thead>
+                            <tr>
+                              <th scope="col">No</th>
+                              <th scope="col" style="width: 20%;">Nama Pegawai</th>
+                              <th scope="col" style="width: 15%;">NUPY</th>
+                              <th scope="col">Tanggal Mulai</th>
+                              <th scope="col">Tanggal Selesai</th>
+                              <th scope="col">Lama Cuti
+                                <figcaption class="blockquote-footer">
+                                  <small  class="text-muted">Satuan Hari Kerja</small>
+                                </figcaption>
+                              </th>
+                              <th scope="col">Keterangan Cuti</th>
+                              <th scope="col" style="text-align: right;">Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for cuti in cutis %}
+                            <tr>
+                              <th scope="row">{{ forloop.counter }}</th>
+                              <td>{{cuti.nupy.nama_pegawai}}</td>
+                              <td><a href="{% url 'kepegawaian:detailPegawai' cuti.nupy.nupy %}" title="Detail Pegawai" class="ahover">{{cuti.nupy.nupy}}</a></td>
+                              <td>{{cuti.tanggal_mulai_cuti}}</td>
+                              <td>{{cuti.tanggal_habis_cuti}}</td>
+                              <td>{{cuti.lama_cuti}}</td>
+                              <td>{{cuti.ket_cuti}}</td>
+                              <td style="text-align: right;">                 
+                                <form action="{% url 'kepegawaian:deleteCuti' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id_surat" value="{{object.id_surat}}">
+                                    <input type="hidden" name="cuti" value="{{cuti.id_cuti}}">               
+                                    <button onclick="return confirm('Delete Cuti Pegawai: {{cuti.nupy.nama_pegawai}}?')" title="Delete Cuti" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></button>
+                                  </form>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          <form action="{% url 'kepegawaian:addCuti' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="id_surat" value="{{object.id_surat}}">
+                              <tr>
+                                <th>#</th>
+                                <td colspan="2"><select name="nupy" class="form-control" required>
+                                    <option value="">Daftar Pegawai</option>
+                                    {% for pegawai in pegawai_list %}
+                                    <option value="{{pegawai.nupy}}">{{pegawai.nama_pegawai}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                                <td><input type="date" class="form-control" name="tanggal_mulai_cuti" required></td>
+                                <td><input type="date" class="form-control" name="tanggal_habis_cuti" required></td>
+                                <td><input type="number" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==2) return false;" class="form-control" name="lama_cuti" placeholder="13" required></td>
+                                <td><textarea name="ket_cuti" class="form-control" rows="2" placeholder="Keterangan Cuti" required></textarea></td>
+                                <td style="text-align: right;"><button type="submit" class="btn btn-primary">Tambah</button></td>
+                              </tr>
+                            </form>
+                          </tbody>
+                        </table>
+                      </div>
+                </div> 
+            </div>
+        </div><!-- /.card-body -->
+      </div>
+</div>
+    </div>
+    
+      <!-- Detail Jabatan -->
+</section>
+    <!-- /.Left col -->
+  </div>
+  
+{% endblock content %}

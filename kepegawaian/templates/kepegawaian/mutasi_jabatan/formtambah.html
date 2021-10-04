@@ -1,0 +1,34 @@
+<form action="{% url 'kepegawaian:addSkMutasiJabatan'%}" method="POST">
+{% csrf_token %}
+<div class="form-row">
+  <div class="form-group col-md-6">
+    <label for="inputPassword4">No Surat Mutasi Jabatan</label>
+    <div class="form-row">
+        <div class="col">
+          <input type="number" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;"  name="nosk1" class="form-control" placeholder="194" autofocus required>
+        </div>
+        <div class="col">
+          <input type="text" name="nosk2" class="form-control" placeholder="SAF" required maxlength="4">
+        </div>
+        <div class="col">
+            <input type="text" name="nosk3" class="form-control" placeholder="A1" required maxlength="3">
+        </div>
+        <div class="col">
+            <input type="text" name="nosk4" class="form-control" placeholder="XI" required maxlength="3">
+        </div>
+        <div class="col">
+            <input type="number" name="nosk5" class="form-control" placeholder="2019" required min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==5) return false;">
+        </div>
+      </div>
+  </div>
+  <div class="form-group col-md-3">
+    <label>Tanggal Mutasi Jabatan</label>
+    <input type="date" class="form-control" name="tanggal_mutasi_jabatan" required>
+  </div>
+  <div class="form-group col-md-3">
+    <label>Keterangan Tambahan</label>
+    <textarea name="ket_mutasi_jabatan" class="form-control" rows="2" placeholder="......" required></textarea>
+  </div>
+</div>
+<button type="submit" class="btn btn-primary float-right">Tambah Data</button>
+</form>

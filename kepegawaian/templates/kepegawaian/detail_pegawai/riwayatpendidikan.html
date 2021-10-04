@@ -1,0 +1,128 @@
+{% extends "../layouts/app.html" %}
+
+{% block title %} Pegawai {% endblock title %}
+
+{% block navmenuopenpegawai %} menu-open {% endblock navmenuopenpegawai %}
+
+{% block navactivepegawai %} active {% endblock navactivepegawai %}
+
+{% block subnavactiveriwayatpendidikan %} active {% endblock subnavactiveriwayatpendidikan %}
+
+{% block content-header-page %}
+<li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexDetailJabatan' %}">Riwayat Pendidikan</a></li>
+<li class="breadcrumb-item active"></li>
+{% endblock content-header-page %}
+
+{% block searchform %} 
+      <form class="form-control-file ml-3" action="" method="GET">
+        <div class="input-group input-group-sm">
+          <input class="form-control form-control-navbar" name="search" type="search"  placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-navbar" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+{% endblock %}
+
+{% block print %}
+<a href="{% url 'kepegawaian:printRiwayatPendidikan' %}" title="Print Data Jabatan Pegawai Aktif" target="_blank" class="dropdown-item"><i class="fas fa-print" style="color: rgb(0, 0, 0);"></i> Print</a>
+{% endblock print %}
+
+{% block content %}
+<style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);}</style> 
+<div class="row">
+    <!-- Left col -->
+    <section class="col-lg-12 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+      <div class="card card-outline card-success">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-user-graduate mr-1"></i>
+            Daftar Riwayat Pendidikan Pegawai <strong>Aktif</strong>
+          </h3>
+          </div><!-- /.card-header -->
+        <div class="card-body">
+          <div class="tab-content p-0">
+            <!-- Morris chart - Sales -->
+                <div class="tab-pane active" id="data-pegawai">
+                    <div class="app-table">
+                      <table class="table table-striped table-hover table-sm table-responsive-md">
+                        <thead>
+                          <tr>
+                            <th scope="col">Nama Pegawai</th>
+                            <th scope="col">NUPY</th>
+                            <th scope="col">Riwayat Pendidikan</th>
+                            <th scope="col">Tahun Lulus</th>
+                            <th scope="col">Foto</th>
+                          </tr>
+                        </thead>
+                        <tbody> 
+                        {% regroup object_list by nupy as grouped %}                    
+                        {% for group in grouped%}
+                        {% for riwayat in group.list %}
+                          <tr>
+                            {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ riwayat.nupy.nama_pegawai }}</td>{% endifchanged %}
+                            {% ifchanged %}<td rowspan="{{ group.list|length }}"><a href="{% url 'kepegawaian:detailPegawai' riwayat.nupy.nupy %}" title="Detail Pegawai" class="ahover">{{riwayat.nupy.nupy}}</a></td>{% endifchanged %}
+                            {% if riwayat.pendidikan.pendidikan == "TIDAK ADA" and riwayat.jurusan.jurusan == "TIDAK ADA" and riwayat.universitas.universitas == "TIDAK ADA" %}
+                            <td>-</td>
+                            <td>-</td>
+                            {% else %}
+                            <td>{{riwayat.pendidikan.pendidikan}}, {{riwayat.jurusan.jurusan}} {{riwayat.universitas.universitas}}</td>
+                            <td>{{riwayat.tahun_lulus}}</td>
+                            {% endif %}
+                            {% ifchanged %}<td rowspan="{{ group.list|length }}"><img src="{{riwayat.nupy.foto.url}}" alt="Foto Pegawai" width="70" height="80"></td>{% endifchanged %}
+                          </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  
+                  <div class="pagination-container">
+                    <nav aria-label="Page navigation" class="float-right">
+                      <ul class="pagination pagination-sm">
+            
+                        {% if page_obj.has_previous %}
+                          <li class="page-item">
+                              <!-- <a href="?page=1">&laquo; first</a> -->
+                              <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
+                          </li>
+                        {% endif %}
+          
+                        {% for num in page_obj.paginator.page_range %}
+                          {% if page_obj.number == num %}
+                          <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+          
+                        {% if page_obj.has_next %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&raquo;</span></a>
+                          </li>
+                        {% endif %}
+                      </ul>
+                    </nav>  
+                  </div>
+
+                </div> 
+          </div>
+        </div><!-- /.card-body -->
+      </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.Left col -->
+  </div>
+{% endblock content %}

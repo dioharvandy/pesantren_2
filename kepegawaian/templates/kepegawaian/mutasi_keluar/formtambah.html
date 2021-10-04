@@ -1,0 +1,45 @@
+<form action="{% url 'kepegawaian:addSkMutasiKeluar'%}" method="POST">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="namapegawai">Nama Pegawai</label>
+          <select name="nupy" class="form-control" required>
+            <option value="">Daftar Pegawai</option>
+            {% for pegawai in pegawai_list %}
+            <option value="{{pegawai.nupy}}">{{pegawai.nama_pegawai}}</option>
+            {% endfor %}
+          </select>
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputPassword4">No Surat Mutasi Keluar</label>
+        <div class="form-row">
+            <div class="col">
+              <input type="text" maxlength="4"  name="nomk1" class="form-control" autofocus required>
+            </div>
+            <div class="col">
+              <input type="text" name="nomk2" class="form-control" required maxlength="4">
+            </div>
+            <div class="col">
+                <input type="text" name="nomk3" class="form-control" required maxlength="3">
+            </div>
+            <div class="col">
+                <input type="text" name="nomk4" class="form-control" required maxlength="3">
+            </div>
+            <div class="col">
+                <input type="text" name="nomk5" class="form-control" required maxlength="5">
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+          <label for="tanggal">Tanggal Mutasi Keluar</label>
+          <input type="date" name="tanggal_mutasi_keluar" class="form-control" id="alamat"  required>
+        </div>
+        <div class="form-group col-md-9">
+            <label for="ket_mutasi_keluar">Keterangan Tambahan</label>
+            <textarea name="ket_mutasi_keluar" class="form-control" rows="2" id="ket_mutasi_keluar" placeholder="....." required></textarea>
+        </div>
+      </div>
+    <button type="submit" class="btn btn-primary float-right" onclick="return confirm('Are You Sure? Status Pegawai Will Be Changed to Keluar')">Tambah Data</button>
+  </form>
