@@ -13,6 +13,16 @@
 <li class="breadcrumb-item active">{{gajis.0.nupy.nupy}}</li>
 {% endblock content-header-page %}
 
+{% block print %}
+<form action="{% url 'kepegawaian:printDetailGajiPegawai'%}" method="POST" target="_blank">
+  {% csrf_token %}
+  <input type="hidden" name="id_bulan_tahun" value="{{gajis.0.bulantahun_id}}">
+  <input type="hidden" name="nupy" value="{{gajis.0.nupy.nupy}}">               
+  <button  title="Print Gaji Pegawai" class="btn btn-sm hover"><i class="fas fa-print" style="color: rgb(0, 0, 0);"></i>Print</button>
+</form>
+{% endblock print %}
+
+
 {% block content %}
 <style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);} i.dhover{color: rgb(22, 100, 62);} i.dhover:hover{color: rgb(56, 167, 102);}</style> 
 <div class="row">
@@ -44,12 +54,15 @@
                                     </figcaption>
                                   </th>
                                   <th scope="col">Kuantitas</th>
-                                  <th scope="col">Gaji Jabatan</th>
+                                  <th scope="col">Gaji Jabatan
+                                    <figcaption class="blockquote-footer">
+                                      <small  class="text-muted">Gaji Pokok x Kuantitas</small>
+                                    </figcaption></th>                                  
                                   <th scope="col">Ekskul</th>
                                   <th scope="col">Kinerja</th>
                                   <th scope="col">Tunjangan</th>
                                   <th scope="col">Total</th>
-                                  <th scope="col" style="width: 20%;">Keterangan Tambahan</th>
+                                  <th scope="col">Ket.</th>
                                 </tr>
                               </thead>
                               <tbody>

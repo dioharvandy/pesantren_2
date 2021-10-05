@@ -44,7 +44,7 @@
 
         }
         #tables td, #tables th {
-          border: 0.5px solid rgb(63, 63, 63);
+          border: 0px solid rgb(63, 63, 63);
         }
 
         #tables th {
@@ -62,7 +62,6 @@
           width: 100%;
           max-width: 100%;
           margin-bottom: 5px;
-          background-color: #fff;
           
         }
     </style>
@@ -74,10 +73,9 @@
   
   <header >
       <img class="img" src="kepegawaian/AdminLTE/dist/img/shinealfalah.png" alt="">
-      <h1>Data Jabatan Pegawai <strong>Aktif</strong> Yayasan Shine Al-falah</h1>
+      <h1>Data Jabatan Pegawai Yayasan Shine Al-falah</h1>
       <h2>Tanggal {{ today | date:"d / F / Y" }}</h2>
   </header>
-
         <table id="tables">
               <tr>
                 <th style="width:180px">Nama Pegawai</th>
@@ -93,6 +91,9 @@
               </tr>
               {% regroup jabatans by nupy as grouped %}                    
               {% for group in grouped%}
+              <tr>
+                <td><strong>{{forloop.counter}}.</strong></td>
+                </tr>
               {% for jabatan in group.list %}
                 <tr>
                   {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ jabatan.nupy.nama_pegawai }}</td>{% endifchanged %}

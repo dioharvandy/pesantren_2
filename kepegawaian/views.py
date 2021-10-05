@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.core.paginator import Paginator
 
 from .models import BulanTahun, Gaji, Jabatan, Jurusan, Pegawai, Pendidikan,Surat_mutasi_jabatan, Detail_jabatan, Riwayat_pendidikan, Universitas
 
@@ -42,10 +43,10 @@ class PegawaiDetailView(generic.DetailView):
         context = super(PegawaiDetailView, self).get_context_data(**kwargs)
         context['jabatans'] = Detail_jabatan.objects.filter(nupy=self.get_object()).order_by("status_jabatan","-sk_mutasi_jabatan")
         context['pendidikans'] = Riwayat_pendidikan.objects.filter(nupy=self.get_object())
-        context['pendidikan_list'] = Pendidikan.objects.all()
-        context['jurusan_list'] = Jurusan.objects.all()
-        context['universitas_list'] = Universitas.objects.all()
-        context['jabatan_list'] = Jabatan.objects.all()
+        context['pendidikan_list'] = Pendidikan.objects.order_by('pendidikan')
+        context['jurusan_list'] = Jurusan.objects.order_by('jurusan')
+        context['universitas_list'] = Universitas.objects.order_by('universitas')
+        context['jabatan_list'] = Jabatan.objects.order_by('nama_jabatan','gaji_pokok')
         return context
 
 def addpegawai(request):
@@ -114,8 +115,13 @@ def addriwayatpendidikan(request):
         nup =  request.POST['nupy']
         nupy = Pegawai.objects.get(nupy = nup)
         try:
-            saveriwayat = Riwayat_pendidikan(nupy =nupy, pendidikan_id = request.POST['pendidikan'], jurusan_id = request.POST['jurusan'],
-                                             universitas_id = request.POST['universitas'], tahun_lulus = request.POST['tahun_lulus'])
+            if not request.POST['tahun_lulus']:
+                saveriwayat = Riwayat_pendidikan(nupy =nupy, pendidikan_id = request.POST['pendidikan'], jurusan_id = request.POST['jurusan'],
+                                             universitas_id = request.POST['universitas'], tahun_lulus = None)
+            else:
+                tahun_lulus = request.POST['tahun_lulus']
+                saveriwayat = Riwayat_pendidikan(nupy =nupy, pendidikan_id = request.POST['pendidikan'], jurusan_id = request.POST['jurusan'],
+                                             universitas_id = request.POST['universitas'], tahun_lulus = tahun_lulus)
             saveriwayat.save()
             messages.success(request, 'Data Riwayat Pendidikan Pegawai Berhasil Ditambahkan.', extra_tags='primary')
             return HttpResponseRedirect(reverse('kepegawaian:detailPegawai', args=(request.POST['nupy'],)))
@@ -148,10 +154,9 @@ class DetailJabatanIndexView(generic.ListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         if search:
-            return Detail_jabatan.objects.filter( Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search) |
-                                                  Q(status_jabatan="1")).order_by("nupy")
+            return Detail_jabatan.objects.filter( Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search) & Q(status_jabatan="1")).order_by("nupy")
         else:
-            return Detail_jabatan.objects.filter(Q(status_jabatan="1")).order_by("nupy")
+            return Detail_jabatan.objects.filter(status_jabatan="1").order_by("nupy")
 
 class DetailJabatanDetailView(generic.DetailView):
     model = Detail_jabatan
@@ -222,7 +227,7 @@ def deletedetailjabatan(request):
 # PRINT TO PDF
 class PegawaiPrintView(generic.View):
      def get(self, request, *args, **kwargs):
-        pegawai = Pegawai.objects.all()
+        pegawai = Pegawai.objects.order_by('tanggal_masuk')
         # pegawai = Pegawai.objects.all().order_by('status_pegawai','lembaga_id')
         today = timezone.now()
         params = {
@@ -258,6 +263,13 @@ class RiwayatPendidikanPrintView(generic.View):
 
         pdf = render_to_pdf('kepegawaian/detail_pegawai/pdfriwayat_pendidikan.html',params)
         return HttpResponse(pdf, content_type='application/pdf')
+
+def detailgajiPrintView(request):
+    if request.method == "POST":
+        gaji = Gaji.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        return render(request, 'kepegawaian/gaji/pdfdetailgaji.html', {'gajis': gaji})  
+    else:
+       return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
 # END PRINT TO PDF
 
 # TEST DOANG
@@ -286,8 +298,8 @@ class SkMutasiJabatanDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(SkMutasiJabatanDetailView, self).get_context_data(**kwargs)
         context['jabatans'] = Detail_jabatan.objects.filter(sk_mutasi_jabatan=self.get_object())
-        context['pegawai_list'] = Pegawai.objects.all()
-        context['jabatan_list'] = Jabatan.objects.all()
+        context['pegawai_list'] = Pegawai.objects.order_by('nama_pegawai')
+        context['jabatan_list'] = Jabatan.objects.order_by('nama_jabatan')
         return context
 
 def addskmutasijabatan(request):
@@ -324,17 +336,6 @@ def load_jabatans1(request):
     nupy = request.GET.get('nupy')
     jabatan = Detail_jabatan.objects.filter(Q(nupy=nupy) & Q(status_jabatan = "1")).all()
     return render(request, 'kepegawaian/gaji/jabatan-input-list.html', {'jabatans': jabatan})
-
-def load_pegawaishasilrekapbulanan(request):
-    bulan = request.GET.get('bulan')
-    pegawai = request.GET.get('pegawai')
-    a = bulan.split('-')
-    absensi = Absensi.objects.filter(Q(tanggal_absen__tanggal_absen__year = a[0]) & Q(tanggal_absen__tanggal_absen__month = a[1]) & Q(nupy__nupy = pegawai))
-    h = Absensi.objects.filter(Q(tanggal_absen__tanggal_absen__year = a[0]) & Q(tanggal_absen__tanggal_absen__month = a[1]) & Q(nupy__nupy = pegawai) & Q(status_absen = "H"))
-    i = Absensi.objects.filter(Q(tanggal_absen__tanggal_absen__year = a[0]) & Q(tanggal_absen__tanggal_absen__month = a[1]) & Q(nupy__nupy = pegawai) & Q(status_absen = "I"))
-    s = Absensi.objects.filter(Q(tanggal_absen__tanggal_absen__year = a[0]) & Q(tanggal_absen__tanggal_absen__month = a[1]) & Q(nupy__nupy = pegawai) & Q(status_absen = "S"))
-    a = Absensi.objects.filter(Q(tanggal_absen__tanggal_absen__year = a[0]) & Q(tanggal_absen__tanggal_absen__month = a[1]) & Q(nupy__nupy = pegawai) & Q(status_absen = "A"))
-    return render(request, 'kepegawaian/absensi/tabel/tabel-detail-absensi.html', {'absensis': absensi,'hs': h,'is': i,'ss': s,'as': a})
 # END AJAX to Get jabatan lama di surat mutasi jabatan
 
 # BULAN TAHUN
@@ -361,11 +362,12 @@ class BulanTahunDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         search = self.request.GET.get('search')
         context = super(BulanTahunDetailView, self).get_context_data(**kwargs)
+        page_number = self.request.GET.get('page')
         if search:
             context['gajis'] = Gaji.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
         else:
-            context['gajis'] = Gaji.objects.filter(bulantahun_id=self.get_object()).order_by("-created_at")
-        context['pegawai_list'] = Pegawai.objects.all()
+            context['gajis'] = Paginator(Gaji.objects.filter(bulantahun_id=self.get_object()).order_by("-created_at"),50).get_page(page_number)
+        context['pegawai_list'] = Pegawai.objects.order_by('nama_pegawai')
         return context
 
 def addbulantahun(request):

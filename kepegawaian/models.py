@@ -33,10 +33,10 @@ class Universitas (models.Model):
 class Riwayat_pendidikan (models.Model):
     id_riwayat_pendidikan = models.BigAutoField(primary_key=True, default=None)
     nupy = models.ForeignKey('Pegawai', on_delete=models.CASCADE, db_column='nupy' )
-    pendidikan = models.ForeignKey(Pendidikan, on_delete=models.CASCADE)
-    jurusan = models.ForeignKey(Jurusan, on_delete=models.CASCADE)
-    universitas = models.ForeignKey(Universitas, on_delete=models.CASCADE)
-    tahun_lulus = models.DateField()
+    pendidikan = models.ForeignKey(Pendidikan, on_delete=models.CASCADE, default=None)
+    jurusan = models.ForeignKey(Jurusan, on_delete=models.CASCADE, default=None)
+    universitas = models.ForeignKey(Universitas, on_delete=models.CASCADE, default=None)
+    tahun_lulus = models.DateField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="app-table">
-                                <table class="table table-striped table-hover table-sm table-responsive-md">
+                                <table class="table table-borderless table-sm table-responsive-md">
                                   <thead>
                                     <tr>
                                       <th scope="col" style="width:35%">Jabatan / Gaji Pokok</th>
@@ -104,7 +104,7 @@
                 <div class="tab-pane active" id="riwayat-pendidikan">
 
                     <div class="app-table">
-                        <table id="table" class="table table-striped table-hover table-sm table-responsive-md">
+                        <table id="table" class="table table-borderless table-sm table-responsive-md">
                           <thead>
                             <tr>
                               <th scope="col">Nama Pegawai</th>
@@ -132,6 +132,9 @@
 
                           {% regroup gajis by nupy as grouped %}                    
                           {% for group in grouped%}
+                            <tr>
+                            <td><strong>{{forloop.counter}}.</strong></td>
+                            </tr>
                           {% for gaji in group.list %}                        
                             <tr>
                               {% ifchanged %}<td rowspan="{{ group.list|length }}">{{gaji.nupy.nama_pegawai}}</td>{% endifchanged %}
@@ -165,6 +168,41 @@
                           {% endfor %}
                           </tbody>
                         </table>
+                      </div>
+                      <div class="pagination-container">
+                        <nav aria-label="Page navigation" class="float-right">
+                          <ul class="pagination pagination-sm">
+                
+                            {% if gajis.has_previous %}
+                              <li class="page-item">
+                                  <!-- <a href="?page=1">&laquo; first</a> -->
+                                  <a class="page-link" href="?page={{ gajis.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                              </li>
+                            {% else %}
+                              <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
+                              </li>
+                            {% endif %}
+              
+                            {% for num in gajis.paginator.page_range %}
+                              {% if gajis.number == num %}
+                              <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                              {% elif num > gajis.number|add:'-3' and num < gajis.number|add:'3' %}
+                              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+              
+                            {% if gajis.has_next %}
+                              <li class="page-item">
+                              <a class="page-link" href="?page={{ gajis.next_page_number }}" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a>
+                              </li>
+                            {% else %}
+                              <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&raquo;</span></a>
+                              </li>
+                            {% endif %}
+                          </ul>
+                        </nav>  
                       </div>
                 </div> 
             </div>

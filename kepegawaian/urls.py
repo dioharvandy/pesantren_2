@@ -47,6 +47,7 @@ urlpatterns = [
     path('addgaji', views.addgaji, name='addGaji'),
     path('deletegaji', views.deletegaji, name='deleteGaji'),
     path('gaji/detailgaji/detailgajipegawai', views.detailgaji, name='detailGajiPegawai'),
+    path('printdetailgaji'+now, views.detailgajiPrintView, name='printDetailGajiPegawai'),
 
 # -------------------------------------------------------MAIN DATA ---------------------------------------------------------------------
 
