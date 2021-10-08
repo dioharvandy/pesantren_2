@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import CharField
 from django.conf import settings
@@ -67,9 +68,10 @@ class Pegawai (models.Model):
 
     def __str__(self):
         return self.nama_pegawai
-
     def delete(self, *args, **kwargs):
-        os.remove(os.path.join(settings.MEDIA_ROOT, self.foto.name))
+        storage = self.foto.storage
+        if storage.exists(self.foto.name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, self.foto.name))
         super(Pegawai,self).delete(*args,**kwargs)
 
     # class meta:
@@ -134,8 +136,8 @@ class BulanTahun(models.Model):
     class Meta:
         unique_together = (("bulan","tahun"),)
 
-class Gaji (models.Model):
-    id_gaji = models.BigAutoField(primary_key=True, default=None)
+class Gaji_jabatan (models.Model):
+    id_gaji_jabatan = models.BigAutoField(primary_key=True, default=None)
     nupy = models.ForeignKey('Pegawai',  on_delete=models.CASCADE,  db_column='nupy')
     jabatan = models.ForeignKey(Jabatan, on_delete=models.CASCADE, default=None)
     bulantahun = models.ForeignKey(BulanTahun, on_delete=models.CASCADE, default=None)
@@ -144,12 +146,26 @@ class Gaji (models.Model):
         unique_together = (("nupy","jabatan","bulantahun"),)
 
     kuantitas = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nupy
+
+class Gaji_kualitas (models.Model):
+    id_gaji_kualitas = models.BigAutoField(primary_key=True, default=None)
+    nupy = models.ForeignKey('Pegawai', on_delete=models.CASCADE, db_column='nupy')
+    bulantahun = models.ForeignKey(BulanTahun, on_delete=models.CASCADE, default=None)
     ekskul = models.IntegerField(default=None)
     kinerja = models.IntegerField()
     tunjangan = models.IntegerField()
     ket_gaji = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # db_table = 'gaji'
+        unique_together = (("nupy","bulantahun"),)
 
     def __str__(self):
         return self.nupy

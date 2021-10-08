@@ -73,7 +73,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="sk_mutasi_jabatan" value="{{object.sk_mutasi_jabatan}}">
                                     <input type="hidden" name="jabatan" value="{{jabatan.id_detail_jabatan}}">               
-                                    <button onclick="return confirm('Delete Mutasi Jabatan Pegawai: {{jabatan.nupy.nama_pegawai}}?')" title="Delete Mutasi Jabatan" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></button>
+                                    <button onclick="return confirm('Delete Mutasi Jabatan Pegawai: {{jabatan.nupy.nupy}}?')" title="Delete Mutasi Jabatan" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></button>
                                   </form>
                               </td>
                             </tr>

@@ -9,9 +9,10 @@ from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.db.models import F, Sum
 from django.core.paginator import Paginator
 
-from .models import BulanTahun, Gaji, Jabatan, Jurusan, Pegawai, Pendidikan,Surat_mutasi_jabatan, Detail_jabatan, Riwayat_pendidikan, Universitas
+from .models import BulanTahun, Gaji_jabatan, Gaji_kualitas, Jabatan, Jurusan, Pegawai, Pendidikan,Surat_mutasi_jabatan, Detail_jabatan, Riwayat_pendidikan, Universitas
 
 # Create your views here.
 
@@ -204,7 +205,7 @@ def adddetailjabatanwithsk(request):
 def editdetailjabatan(request):
     if request.method == "POST":
         Detail_jabatan.objects.filter(id_detail_jabatan = request.POST['jabatan_id']).update(status_jabatan = request.POST['status_jabatan'])
-        messages.success(request, 'Data Status Jabatan Berhasil Diubah.', extra_tags='primary')
+        messages.success(request, 'Data Status Jabatan Berhasil Diubah.', extra_tags='warning')
         return HttpResponseRedirect(reverse('kepegawaian:detailPegawai', args=(request.POST['nupy'],)))
     else:
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
@@ -266,8 +267,9 @@ class RiwayatPendidikanPrintView(generic.View):
 
 def detailgajiPrintView(request):
     if request.method == "POST":
-        gaji = Gaji.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
-        return render(request, 'kepegawaian/gaji/pdfdetailgaji.html', {'gajis': gaji})  
+        gaji_jabatan = Gaji_jabatan.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        gaji_kualitas = Gaji_kualitas.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        return render(request, 'kepegawaian/gaji/pdfdetailgaji.html', {'gaji_jabatans': gaji_jabatan, 'gaji_kualitass': gaji_kualitas}) 
     else:
        return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
 # END PRINT TO PDF
@@ -360,13 +362,18 @@ class BulanTahunDetailView(generic.DetailView):
     #     except ValueError:
     #         return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
     def get_context_data(self, **kwargs):
-        search = self.request.GET.get('search')
+        # search = self.request.GET.get('search')
         context = super(BulanTahunDetailView, self).get_context_data(**kwargs)
         page_number = self.request.GET.get('page')
-        if search:
-            context['gajis'] = Gaji.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
-        else:
-            context['gajis'] = Paginator(Gaji.objects.filter(bulantahun_id=self.get_object()).order_by("-created_at"),50).get_page(page_number)
+        # if search:
+        #     context['gaji_jabatans'] = Gaji_jabatan.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
+        #     context['gaji_kualitass'] = Gaji_kualitas.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
+        # else:
+        #     context['gaji_jabatans'] = Paginator(Gaji_jabatan.objects.filter(bulantahun_id=self.get_object()).order_by("-created_at"),50).get_page(page_number)
+        context['gaji_kualitass'] = Paginator(Pegawai.objects.filter(Q(gaji_kualitas__bulantahun_id=self.get_object())&Q(gaji_jabatan__bulantahun_id=self.get_object())).
+                                        annotate(gaji=Sum(F('gaji_jabatan__jabatan__gaji_pokok')*F('gaji_jabatan__kuantitas'))+
+                                                    F('gaji_kualitas__ekskul')+F('gaji_kualitas__kinerja')+F('gaji_kualitas__tunjangan')),50).get_page(page_number)
+            
         context['pegawai_list'] = Pegawai.objects.order_by('nama_pegawai')
         return context
 
@@ -396,9 +403,13 @@ def addgaji(request):
         nupy = Pegawai.objects.get(nupy = request.POST["nupy"])
         try:
             for x in range(1, int(request.POST["length"])+1):
-                gaji = Gaji(nupy = nupy, bulantahun_id = request.POST["bulantahun"], jabatan_id = request.POST["jabatan"+str(x)], kuantitas = request.POST["kuantitas"+str(x)],
-                            ekskul = request.POST["ekskul"], kinerja = request.POST["kinerja"], tunjangan = request.POST["tunjangan"], ket_gaji = request.POST["ket_gaji"] )
-                gaji.save()
+                gaji_jabatan = Gaji_jabatan(nupy = nupy, bulantahun_id = request.POST["bulantahun"], jabatan_id = request.POST["jabatan"+str(x)], 
+                                            kuantitas = request.POST["kuantitas"+str(x)])
+                gaji_jabatan.save()
+            gaji_kualitas = Gaji_kualitas(nupy = nupy, bulantahun_id = request.POST["bulantahun"], ekskul = request.POST["ekskul"], 
+                                          kinerja = request.POST["kinerja"], tunjangan = request.POST["tunjangan"], 
+                                          ket_gaji = request.POST["ket_gaji"])
+            gaji_kualitas.save()
             messages.success(request, 'Data Gaji Pegawai Berhasil Ditambahkan.', extra_tags='primary')
             return HttpResponseRedirect(reverse('kepegawaian:detailGaji', args=( request.POST["bulantahun"],)))
 
@@ -410,8 +421,10 @@ def addgaji(request):
 
 def deletegaji(request):
     if request.method == "POST":
-        gaji = Gaji.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
-        gaji.delete()
+        gaji_jabatan = Gaji_jabatan.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        gaji_kualitas = Gaji_kualitas.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        gaji_jabatan.delete()
+        gaji_kualitas.delete()
         messages.warning(request, 'Data Gaji Pegawai Berhasil Dihapus.', extra_tags='danger')
 
         return HttpResponseRedirect(reverse('kepegawaian:detailGaji', args=(request.POST['id_bulan_tahun'],)))
@@ -420,8 +433,9 @@ def deletegaji(request):
        return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 def detailgaji(request):
     if request.method == "POST":
-        gaji = Gaji.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
-        return render(request, 'kepegawaian/gaji/detailgajipegawai.html', {'gajis': gaji})    
+        gaji_jabatan = Gaji_jabatan.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        gaji_kualitas = Gaji_kualitas.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
+        return render(request, 'kepegawaian/gaji/detailgajipegawai.html', {'gaji_jabatans': gaji_jabatan, 'gaji_kualitass': gaji_kualitas})    
     else:
        return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
 # END GAJI
@@ -529,12 +543,12 @@ class UniversitasDetailView(generic.DetailView):
 def adduniversitas(request):
     if request.method == "POST":
         if Universitas.objects.filter(universitas=request.POST['universitas'].upper()).exists():
-            messages.warning(request, 'Data Universitas Sudah Ada.', extra_tags='danger')
+            messages.warning(request, 'Data Universita/Sekolahs Sudah Ada.', extra_tags='danger')
             return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
         else:
             saveuniversitas = Universitas(universitas = request.POST['universitas'].upper())    
             saveuniversitas.save()
-            messages.success(request, 'Data Universitas Berhasil Ditambahkan.', extra_tags='primary')
+            messages.success(request, 'Data Universitas/Sekolah Berhasil Ditambahkan.', extra_tags='primary')
             return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
     else:
         return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
@@ -544,11 +558,11 @@ def edituniversitas(request):
         updateuniversitas = Universitas.objects.filter(id_universitas = request.POST["id_universitas"])
 
         if Universitas.objects.filter(universitas = request.POST['universitas'].upper()).exists():
-            messages.warning(request, 'Data Universitas Sudah Ada.', extra_tags='danger')
+            messages.warning(request, 'Data Universitas/Sekolah Sudah Ada.', extra_tags='danger')
             return HttpResponseRedirect(reverse('kepegawaian:detailUniversitas', args=(request.POST['id_universitas'],)))
         else:
             updateuniversitas.update(universitas = request.POST['universitas'].upper())
-            messages.success(request, 'Data Universitas Berhasil Diubah.', extra_tags='warning')
+            messages.success(request, 'Data Universitas/Sekolah Berhasil Diubah.', extra_tags='warning')
             return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
     else:
         return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
@@ -556,7 +570,7 @@ def edituniversitas(request):
 def deleteuniversitas(request, pk):
     universitas = get_object_or_404(Universitas, pk=pk)
     universitas.delete()
-    messages.warning(request, 'Data Universitas Berhasil Dihapus.', extra_tags='danger')
+    messages.warning(request, 'Data Universitas/Sekolah Berhasil Dihapus.', extra_tags='danger')
     return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
 # END UNIVERSITAS
 

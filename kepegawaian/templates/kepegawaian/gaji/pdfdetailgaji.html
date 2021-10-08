@@ -44,62 +44,80 @@
         </div>
    
         <div class="row">
-            <div class="col-6 col-sm-6"><strong>{{gajis.0.nupy.nama_pegawai}}</strong></div>
+            <div class="col-6 col-sm-6"><strong>{{gaji_kualitass.0.nupy.nama_pegawai}}</strong></div>
             <div class="col-6 col-sm-4"></div>
           
             <!-- Force next columns to break to new line at md breakpoint and up -->
             <div class="w-100 d-none d-md-block"></div>
           
-            <div class="col-6 col-sm-4"><strong>{{gajis.0.nupy.nupy}}</strong></div>
+            <div class="col-6 col-sm-4"><strong>{{gaji_kualitass.0.nupy.nupy}}</strong></div>
             <div class="col-6 col-sm-4"></div>
 
             <div class="w-100 d-none d-md-block"></div>
           
-            <div class="col-6 col-sm-4"><h4><strong style="color: rgb(0, 133, 78);">{{gajis.0.bulantahun.get_bulan_display}} {{gajis.0.bulantahun.tahun}}</strong></h4></div>
+            <div class="col-6 col-sm-4"><h4><strong style="color: rgb(0, 133, 78);">{{gaji_kualitass.0.bulantahun.get_bulan_display}} {{gaji_kualitass.0.bulantahun.tahun}}</strong></h4></div>
             <div class="col-6 col-sm-4"></div>
           </div>
-  <table id="table" class="table table-borderless table-sm table-responsive-md">
-    <thead>
-      <tr>
-        <th scope="col">Jabatan
-          <figcaption class="blockquote-footer">
-            <small  class="text-muted">Gaji Pokok</small>
-          </figcaption>
-        </th>
-        <th scope="col">Kuantitas</th>
-        <th scope="col">Gaji Jabatan</th>
-        <th scope="col">Ekskul</th>
-        <th scope="col">Kinerja</th>
-        <th scope="col">Tunjangan</th>
-        <th scope="col">Total</th>
-        <th scope="col">Ket.</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% load mathfilters %}
-    {% load humanize %}
+          <div class="row">
+            <div class="col">
+              <div class="app-table">
+                <table id="table" class="table table-borderless table-sm table-responsive-md">
+                  <thead>
+                    <tr>
+                      <th scope="col">Jabatan</th>
+                      <th scope="col">Gaji Pokok</th>
+                      <th scope="col" class="padding25">Kuantitas</th>
+                      <th scope="col">Gaji Jabatan</th>                                  
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% load mathfilters %}
+                  {% load humanize %}
 
-    {% regroup gajis by nupy as grouped %}                    
-    {% for group in grouped%}
-    {% for gaji in group.list %}                        
-      <tr>
-        <td>{{gaji.jabatan.nama_jabatan}}
-          <figcaption class="blockquote-footer">
-            <small class="text-muted">{{gaji.jabatan.gaji_pokok|intcomma}}</small>
-          </figcaption>
-        </td>
-        <td>{{gaji.kuantitas}}</td>
-        <td id="amtlbl" style="font-weight: bold;">{{gaji.jabatan.gaji_pokok|mul:gaji.kuantitas }}</td>
-        {% ifchanged %}<td id="amtlbl" rowspan="{{ group.list|length }}" style="font-weight: bold;">{{gaji.ekskul}}</td>{% endifchanged %}
-        {% ifchanged %}<td id="amtlbl" rowspan="{{ group.list|length }}" style="font-weight: bold;">{{gaji.kinerja}}</td>{% endifchanged %}
-        {% ifchanged %}<td id="amtlbl" rowspan="{{ group.list|length }}" style="font-weight: bold;">{{gaji.tunjangan}}</td>{% endifchanged %}
-        {% ifchanged %}<td id="totlbl" style="font-weight: bold;"> </td>{% endifchanged %}
-        {% ifchanged %}<td rowspan="{{ group.list|length }}">{{gaji.ket_gaji}}</td>{% endifchanged %}
-      </tr>
-    {% endfor %}
-    {% endfor %}
-    </tbody>
-  </table>
+                  {% regroup gaji_jabatans by nupy as grouped %}                    
+                  {% for group in grouped%}
+                  {% for gaji in group.list %}                        
+                    <tr>
+                      <td>{{gaji.jabatan.nama_jabatan}}</td>
+                      <td>{{gaji.jabatan.gaji_pokok}}</td>
+                      <td>{{gaji.kuantitas}}</td>
+                      <td id="amtlbl">{{gaji.jabatan.gaji_pokok|mul:gaji.kuantitas }}</td>
+                    </tr>
+                  {% endfor %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col">
+              <div class="app-table">
+                <table id="table" class="table table-borderless table-sm table-responsive-md">
+                  <thead>
+                    <tr>                             
+                      <th scope="col" class="padding25">Ekskul</th>
+                      <th scope="col" class="padding25">Kinerja</th>
+                      <th scope="col" class="padding25">Tunjangan</th>
+                      <th scope="col" class="padding25">Total</th>
+                      <th scope="col" class="padding25">Ket.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% load mathfilters %}
+                  {% load humanize %}
+                  {% for gaji in gaji_kualitass%}                        
+                    <tr>
+                      <td id="amtlbl">{{gaji.ekskul}}</td>
+                      <td id="amtlbl">{{gaji.kinerja}}</td>
+                      <td id="amtlbl">{{gaji.tunjangan}}</td>
+                      <td style="font-weight: bold;">Rp. <strong id="totlbl"></strong> </td>
+                      <td>{{gaji.ket_gaji}}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 </div>
 <!-- jQuery -->
 <script src="{% static 'kepegawaian/AdminLTE/plugins/jquery/jquery.min.js' %}"></script>
