@@ -65,9 +65,9 @@
                   <thead>
                     <tr>
                       <th scope="col">Jabatan</th>
-                      <th scope="col">Gaji Pokok</th>
+                      <th scope="col" style="width: 35%;">Gaji Pokok Jabatan</th>
                       <th scope="col" class="padding25">Kuantitas</th>
-                      <th scope="col">Gaji Jabatan</th>                                  
+                      <th scope="col" style="width: 25%;">Gaji Jabatan</th>                                  
                     </tr>
                   </thead>
                   <tbody>
@@ -79,7 +79,7 @@
                   {% for gaji in group.list %}                        
                     <tr>
                       <td>{{gaji.jabatan.nama_jabatan}}</td>
-                      <td>{{gaji.jabatan.gaji_pokok}}</td>
+                      <td>{{gaji.jabatan.gaji_pokok}} / {{gaji.jabatan.get_satuan_gaji_display}}</td>
                       <td>{{gaji.kuantitas}}</td>
                       <td id="amtlbl">{{gaji.jabatan.gaji_pokok|mul:gaji.kuantitas }}</td>
                     </tr>

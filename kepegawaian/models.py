@@ -94,6 +94,10 @@ class Jabatan (models.Model):
     id_jabatan = models.BigAutoField(primary_key=True)
     nama_jabatan =  models.CharField(max_length=50)
     gaji_pokok = models.PositiveIntegerField()
+    SATUANS = (
+        ('1', 'Jam'), ('2', 'Bulan'), ('3', 'Pertemuan')
+    )
+    satuan_gaji = models.CharField(max_length=1,choices=SATUANS, default='1' )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

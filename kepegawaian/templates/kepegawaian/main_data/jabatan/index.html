@@ -45,7 +45,8 @@
                           <tr>
                             <th scope="col">No</th>
                             <th scope="col">Nama Jabatan</th>
-                            <th scope="col">Gaji Pokok</th>
+                            <th scope="col">Gaji Pokok Jabatan</th>
+                            <th scope="col">Satuan Gaji Pokok Jabatan</th>
                             <th scope="col">Aksi</th>
                           </tr>
                         </thead>
@@ -56,6 +57,7 @@
                             <th scope="row">{{ forloop.counter }}</th>
                             <td><a href="{% url 'kepegawaian:detailJabatan' jabatan.id_jabatan %}" title="Detail Jabatan" class="ahover">{{jabatan.nama_jabatan}}</a></td>
                             <td>{{jabatan.gaji_pokok|intcomma}}</td>
+                            <td>{{jabatan.get_satuan_gaji_display}}</td>
                             <td>                 
                                 <a href="{% url 'kepegawaian:deleteJabatan' jabatan.id_jabatan %}" title="Delete Jabatan" onclick="return confirm('Delete Jabatan: {{jabatan.nama_jabatan}} and All of Its Component?')" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></a>
                             </td>

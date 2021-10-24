@@ -46,6 +46,7 @@
                             {% csrf_token %}
                             <div class="form-row">
                                 <div class="form-group col-md-12">
+                                  <label for="alamat">Nama Pegawai</label>
                                     <select name="nupy" id="id_jabatan" class="form-control" required>
                                         <option value="">Daftar Pegawai</option>
                                         {% for pegawai in pegawai_list %}
@@ -54,11 +55,12 @@
                                    </select>
                                 </div>
                             </div>
-                            <div class="app-table">
+                            <!-- <div class="app-table">
                                 <table class="table table-borderless table-sm table-responsive-md">
                                   <thead>
                                     <tr>
-                                      <th scope="col" style="width:35%">Jabatan / Gaji Pokok</th>
+                                      <th scope="col">Jabatan</th>
+                                      <th scope="col">Gaji Pokok Jabatan</th>
                                       <th scope="col">Kuantitas</th>
                                       <th scope="col">Ekskul</th>
                                       <th scope="col">Kinerja</th>
@@ -74,6 +76,7 @@
                                     <tr>
                                         <td><input type="hidden" name="bulantahun" value="{{object.id_bulan_tahun}}"></td>
                                         <td></td>
+                                        <td></td>
                                         <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="ekskul" class="form-control" value="0" required></td>
                                         <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kinerja" class="form-control" value="0" required></td>
                                         <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="tunjangan" class="form-control" value="0" required></td>
@@ -82,7 +85,30 @@
                                     </tr>
                                   </tbody>
                                 </table>
-                              </div>                           
+                              </div> -->
+                              <div id="id_jabatan_lama">
+
+                              </div>
+                              <div class="form-row">
+                                <input type="hidden" name="bulantahun" value="{{object.id_bulan_tahun}}">
+                                <div class="form-group col-md-2">
+                                  <label for="alamat">Ekskul</label>
+                                  <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="ekskul" class="form-control" value="0" required>
+                                </div>
+                                  <div class="form-group col-md-2">
+                                  <label for="tanggal_masuk">Kinerja</label>
+                                  <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kinerja" class="form-control" value="0" required>
+                                </div>
+                                <div class="form-group col-md-2">
+                                  <label for="tanggal_masuk">Tunjangan</label>
+                                  <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="tunjangan" class="form-control" value="0" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                  <label for="ket_pegawai">Keterangan Tambahan</label>
+                                  <textarea name="ket_gaji" class="form-control" rows="2" placeholder="......" required></textarea>
+                                </div>
+                              </div> 
+                              <button type="submit" class="btn btn-primary float-right">Tambah Data</button> 
                             </form>
                     </div> 
                     </div>

@@ -143,7 +143,8 @@
                           <thead>
                             <tr>
                               <th scope="col">No</th>
-                              <th scope="col">Jabatan / Gaji Pokok</th>
+                              <th scope="col">Jabatan</th>
+                              <th scope="col" style="width: 20%;">Gaji Pokok Jabatan</th>
                               <th scope="col">No Surat Mutasi Jabatan</th>
                               <th scope="col">Status Jabatan</th>
                               <th scope="col">Tanggal Input</th>
@@ -155,7 +156,8 @@
                           {% for jabatan in jabatans%}
                             <tr>
                               <th scope="row">{{ forloop.counter }}</th>
-                              <td><a href="{% url 'kepegawaian:detailDetailJabatan' jabatan.id_detail_jabatan %}" title="Edit Status Jabatan" class="ahover">{{jabatan.jabatan.nama_jabatan}}</a> / {{jabatan.jabatan.gaji_pokok|intcomma}}</td>
+                              <td><a href="{% url 'kepegawaian:detailDetailJabatan' jabatan.id_detail_jabatan %}" title="Edit Status Jabatan" class="ahover">{{jabatan.jabatan.nama_jabatan}}</a></td>
+                              <td>{{jabatan.jabatan.gaji_pokok|intcomma}} / {{jabatan.jabatan.get_satuan_gaji_display}}</td>
                             {% if jabatan.sk_mutasi_jabatan == NULL %}
                               <td>{{jabatan.sk_mutasi_jabatan}}</td>
                             {% else %}
@@ -186,12 +188,13 @@
                                 <th>#</th>
                                 <td>
                                     <select name="jabatan" class="form-control" required>
-                                      <option value="">Jabatan / Gaji Pokok</option>
+                                      <option value="">Jabatan - Gaji Pokok Jabatan</option>
                                       {% for jabatans in jabatan_list %}
-                                      <option value="{{jabatans.id_jabatan}}">{{jabatans.nama_jabatan}}/ {{jabatans.gaji_pokok|intcomma}}</option>
+                                      <option value="{{jabatans.id_jabatan}}">{{jabatans.nama_jabatan}} - {{jabatans.gaji_pokok|intcomma}} / {{jabatans.get_satuan_gaji_display}}</option>
                                       {% endfor %}
                                     </select>
                                 </td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

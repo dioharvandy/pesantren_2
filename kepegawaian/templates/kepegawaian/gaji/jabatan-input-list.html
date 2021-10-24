@@ -1,18 +1,26 @@
 <input type="hidden" name="length" value="{{jabatans|length}}">
 {% load humanize %}
+<div class="app-table">
+  <table class="table table-borderless table-sm table-responsive-md">
+    <thead>
+      <tr>
+        <th scope="col">Jabatan</th>
+        <th scope="col">Gaji Pokok Jabatan</th>
+        <th scope="col" style="width: 5%;">Kuantitas</th>
+      </tr>
+    </thead>
+    <tbody> 
 {% for jabatan in jabatans %}
-<tr>
-<td>{{ jabatan.jabatan.nama_jabatan }} / {{jabatan.jabatan.gaji_pokok|intcomma}}<input type="hidden" name="jabatan{{ forloop.counter }}" class="form-control" value="{{ jabatan.jabatan.id_jabatan }}" required>
-</td>
-<td>
-    <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kuantitas{{ forloop.counter }}" class="form-control" value="0" autofocus required>
-    <figcaption class="blockquote-footer">
-        <small  class="text-muted">Satuan Gaji Pokok</small>
-      </figcaption>
-</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
+      <tr>
+        <td>{{ jabatan.jabatan.nama_jabatan }}<input type="hidden" name="jabatan{{ forloop.counter }}" class="form-control" value="{{ jabatan.jabatan.id_jabatan }}" required>
+        </td>
+        <td>{{jabatan.jabatan.gaji_pokok|intcomma}} / {{jabatan.jabatan.get_satuan_gaji_display}}<input type="hidden" name="jabatan{{ forloop.counter }}" class="form-control" value="{{ jabatan.jabatan.id_jabatan }}" required>
+        </td>
+        <td>
+            <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kuantitas{{ forloop.counter }}" class="form-control" value="0" autofocus required>
+        </td>
+        </tr>
 {% endfor %}
+</tbody>
+</table>
+</div>

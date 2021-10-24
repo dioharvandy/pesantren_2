@@ -586,13 +586,15 @@ class JabatanDetailView(generic.DetailView):
 
 def addjabatan(request):
     if request.method == "POST":
-        if Jabatan.objects.filter(Q(nama_jabatan = request.POST['jabatan'].upper()) & Q(gaji_pokok = request.POST['gaji_pokok'])).exists():
-            messages.warning(request, 'Data Jabatan dengan Gaji Pokok Sudah Ada.', extra_tags='danger')
+        if Jabatan.objects.filter(Q(nama_jabatan = request.POST['jabatan'].upper()) & Q(gaji_pokok = request.POST['gaji_pokok']) & 
+                                  Q(satuan_gaji = request.POST['satuan_gaji'])).exists():
+            messages.warning(request, 'Data Jabatan Sudah Ada.', extra_tags='danger')
             return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
         else:
-            savejabatan = Jabatan(nama_jabatan = request.POST['jabatan'].upper(), gaji_pokok = request.POST['gaji_pokok'])    
+            savejabatan = Jabatan(nama_jabatan = request.POST['jabatan'].upper(), gaji_pokok = request.POST['gaji_pokok'], 
+                                  satuan_gaji = request.POST['satuan_gaji'])    
             savejabatan.save()
-            messages.success(request, 'Data Jabatan dengan Gaji Pokok Berhasil Ditambahkan.', extra_tags='primary')
+            messages.success(request, 'Data Jabatan Berhasil Ditambahkan.', extra_tags='primary')
             return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
     else:
         return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
@@ -601,12 +603,14 @@ def editjabatan(request):
     if request.method == "POST":
         updatejabatan = Jabatan.objects.filter(id_jabatan = request.POST["id_jabatan"])
 
-        if Jabatan.objects.filter(Q(nama_jabatan = request.POST['jabatan'].upper()) & Q(gaji_pokok = request.POST['gaji_pokok'])).exists():
-            messages.warning(request, 'Data Jabatan dengan Gaji Pokok Sudah Ada.', extra_tags='danger')
+        if Jabatan.objects.filter(Q(nama_jabatan = request.POST['jabatan'].upper()) & Q(gaji_pokok = request.POST['gaji_pokok']) & 
+                                  Q(satuan_gaji = request.POST['satuan_gaji'])).exists():
+            messages.warning(request, 'Data Jabatan Sudah Ada.', extra_tags='danger')
             return HttpResponseRedirect(reverse('kepegawaian:detailJabatan', args=(request.POST['id_jabatan'],)))
         else:
-            updatejabatan.update(nama_jabatan = request.POST['jabatan'].upper(), gaji_pokok = request.POST['gaji_pokok'])
-            messages.success(request, 'Data Jabatan dengan Gaji Pokok Berhasil Diubah.', extra_tags='warning')
+            updatejabatan.update(nama_jabatan = request.POST['jabatan'].upper(), gaji_pokok = request.POST['gaji_pokok'], 
+                                 satuan_gaji = request.POST['satuan_gaji'])
+            messages.success(request, 'Data Jabatan Berhasil Diubah.', extra_tags='warning')
             return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
     else:
         return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))

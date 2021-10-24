@@ -1,21 +1,22 @@
-<form action="{% url 'kepegawaian:addJabatan'%}" method="POST" class="row g-3">
+<form action="{% url 'kepegawaian:addJabatan'%}" method="POST"  >
     {% csrf_token %}
-    <div class="col-auto ">
-        <label for="inputPassword4">Nama Jabatan</label>
-      </div>
-      <div class="col-auto ">
+    <div class="form-row">
+      <div class="form-group col-md-5">
+        <label>Nama Jabatan</label>
         <input type="text" name="jabatan" class="form-control" autofocus required>
       </div>
-      <div class="col-auto ">
-        <label for="inputPassword4">Gaji Pokok</label>
-      </div>
-      <div class="col-auto ">
+      <div class="form-group col-md-4">
+        <label>Gaji Pokok Jabatan</label>
         <input type="number" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==10) return false;" name="gaji_pokok" class="form-control" required>
-        <figcaption class="blockquote-footer">
-          <small  class="text-muted">Berdasarkan Pertemuan, Jam atau Bulan</small>
-        </figcaption>
       </div>
-      <div class="col-auto ">
-        <button type="submit" class="btn btn-primary">Tambah</button>
+      <div class="form-group col-md-3">
+        <label>Satuan Gaji Pokok Jabatan</label>
+        <select name="satuan_gaji" class="form-control">
+          <option value="1">Jam</option>
+          <option value="2">Bulan</option>
+          <option value="3">Pertemuan</option>
+        </select>
       </div>
+    </div>
+      <button type="submit" class="btn btn-primary float-right">Tambah</button>
   </form>  

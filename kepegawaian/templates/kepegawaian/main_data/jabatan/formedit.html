@@ -1,22 +1,23 @@
-<form action="{% url 'kepegawaian:editJabatan'%}" method="POST" class="row g-3">
+<form action="{% url 'kepegawaian:editJabatan'%}" method="POST">
   {% csrf_token %}
   <input type="hidden" name="id_jabatan" value="{{object.id_jabatan}}">
-  <div class="col-auto ">
+  <div class="form-row">
+    <div class="form-group col-md-5">
       <label for="inputPassword4">Nama Jabatan</label>
-    </div>
-    <div class="col-auto ">
       <input type="text" name="jabatan" class="form-control" value="{{object.nama_jabatan}}" autofocus required>
     </div>
-    <div class="col-auto ">
-      <label for="inputPassword4">Gaji Pokok</label>
-    </div>
-    <div class="col-auto ">
+    <div class="form-group col-md-4">
+      <label for="inputPassword4">Gaji Pokok Jabatan</label>
       <input type="number" value="{{object.gaji_pokok}}" min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==8) return false;" name="gaji_pokok" class="form-control" required>
-      <figcaption class="blockquote-footer">
-        <small  class="text-muted">Berdasarkan Pertemuan, Jam atau Bulan</small>
-      </figcaption>
     </div>
-    <div class="col-auto ">
-      <button type="submit" class="btn btn-success">Edit</button>
+    <div class="form-group col-md-3">
+      <label>Satuan Gaji Pokok Jabatan</label>
+      <select name="satuan_gaji" class="form-control">
+        <option value="1" {% if object.satuan_gaji == "1" %} selected{% endif %}>Jam</option>
+        <option value="2" {% if object.satuan_gaji == "2" %} selected{% endif %}>Bulan</option>
+        <option value="3" {% if object.satuan_gaji == "3" %} selected{% endif %}>Pertemuan</option>
+      </select>
     </div>
+  </div>
+      <button type="submit" class="btn btn-success float-right">Edit</button>
 </form> 

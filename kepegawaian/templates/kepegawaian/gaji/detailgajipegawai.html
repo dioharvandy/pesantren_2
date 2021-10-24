@@ -50,9 +50,9 @@
                               <thead>
                                 <tr>
                                   <th scope="col">Jabatan</th>
-                                  <th scope="col">Gaji Pokok</th>
-                                  <th scope="col" class="padding25">Kuantitas</th>
-                                  <th scope="col">Gaji Jabatan</th>                                  
+                                  <th scope="col" style="width: 35%;">Gaji Pokok Jabatan</th>
+                                  <th scope="col">Kuantitas</th>
+                                  <th scope="col" style="width: 25%;">Gaji Jabatan</th>                                  
                                 </tr>
                               </thead>
                               <tbody>
@@ -64,9 +64,9 @@
                               {% for gaji in group.list %}                        
                                 <tr>
                                   <td>{{gaji.jabatan.nama_jabatan}}</td>
-                                  <td>{{gaji.jabatan.gaji_pokok}}</td>
+                                  <td>{{gaji.jabatan.gaji_pokok}} / {{gaji.jabatan.get_satuan_gaji_display}}</td>
                                   <td>{{gaji.kuantitas}}</td>
-                                  <td id="amtlbl" style="background-color: rgb(206, 195, 71);">{{gaji.jabatan.gaji_pokok|mul:gaji.kuantitas }}</td>
+                                  <td id="amtlbl">{{gaji.jabatan.gaji_pokok|mul:gaji.kuantitas }}</td>
                                 </tr>
                               {% endfor %}
                               {% endfor %}
@@ -79,11 +79,11 @@
                             <table id="table" class="table table-striped table-hover table-sm table-responsive-md">
                               <thead>
                                 <tr>                             
-                                  <th scope="col" class="padding25">Ekskul</th>
-                                  <th scope="col" class="padding25">Kinerja</th>
-                                  <th scope="col" class="padding25">Tunjangan</th>
-                                  <th scope="col" class="padding25">Total</th>
-                                  <th scope="col" class="padding25">Ket.</th>
+                                  <th scope="col">Ekskul</th>
+                                  <th scope="col">Kinerja</th>
+                                  <th scope="col">Tunjangan</th>
+                                  <th scope="col">Total</th>
+                                  <th scope="col">Ket.</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -91,9 +91,9 @@
                               {% load humanize %}
                               {% for gaji in gaji_kualitass %}                        
                                 <tr>
-                                  <td id="amtlbl" style="background-color: rgb(206, 71, 71);">{{gaji.ekskul}}</td>
-                                  <td id="amtlbl" style="background-color: rgb(206, 71, 71);">{{gaji.kinerja}}</td>
-                                  <td id="amtlbl" style="background-color: rgb(206, 71, 71);">{{gaji.tunjangan}}</td>
+                                  <td id="amtlbl">{{gaji.ekskul}}</td>
+                                  <td id="amtlbl">{{gaji.kinerja}}</td>
+                                  <td id="amtlbl">{{gaji.tunjangan}}</td>
                                   <td style="background-color: rgb(71, 206, 125);  font-weight: bold;">Rp. <span id="totlbl"></span> </td>
                                   <td>{{gaji.ket_gaji}}</td>
                                 </tr>
