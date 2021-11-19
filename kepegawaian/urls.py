@@ -18,7 +18,7 @@ urlpatterns = [
     path('detailpegawai/<str:pk>', views.PegawaiDetailView.as_view(), name='detailPegawai'),
     path('editpegawai', views.editpegawai, name='editPegawai'),
 
-    path('daftarjabatan', views.DetailJabatanIndexView.as_view(), name='indexDetailJabatan'),
+    # path('daftarjabatan', views.DetailJabatanIndexView.as_view(), name='indexDetailJabatan'),
     path('adddetailjabatan', views.adddetailjabatan, name='addDetailJabatan'),
     path('adddetailjabatanwithsk', views.adddetailjabatanwithsk, name='addDetailJabatanWithSk'),
     path('detailpegawai/detailjabatan/<str:pk>', views.DetailJabatanDetailView.as_view(), name='detailDetailJabatan'),
@@ -26,7 +26,7 @@ urlpatterns = [
     path('editdetailjabatan', views.editdetailjabatan, name='editDetailJabatan'),
     path('printjabatan'+now, views.DetailJabatanPrintView.as_view(), name='printDetailJabatan'),
 
-    path('daftarriwayatpendidikan', views.RiwayatPendidikanIndexView.as_view(), name='indexRiwayatPendidikan'),
+    # path('daftarriwayatpendidikan', views.RiwayatPendidikanIndexView.as_view(), name='indexRiwayatPendidikan'),
     path('addriwayatpendidikan', views.addriwayatpendidikan, name='addRiwayatPendidikan'),
     path('deleteriwayatpendidikan', views.deleteriwayatpendidikan, name='deleteRiwayatPendidikan'),
     path('printriwayatpendidikan'+now, views.RiwayatPendidikanPrintView.as_view(), name='printRiwayatPendidikan'),

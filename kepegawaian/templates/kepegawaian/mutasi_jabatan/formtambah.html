@@ -1,4 +1,4 @@
-<form action="{% url 'kepegawaian:addSkMutasiJabatan'%}" method="POST">
+<form action="{% url 'kepegawaian:addSkMutasiJabatan'%}" method="POST" enctype="multipart/form-data">
 {% csrf_token %}
 <div class="form-row">
   <div class="form-group col-md-6">
@@ -26,6 +26,12 @@
     <input type="date" class="form-control" name="tanggal_mutasi_jabatan" required>
   </div>
   <div class="form-group col-md-3">
+    <label for="foto">File Surat</label>
+    <input type="file" accept=".doc, .docx, .pdf" name="file_surat" class="form-control-file" id="foto">
+  </div>
+</div>
+<div class="form-row">
+  <div class="form-group col-md-12">
     <label>Keterangan Tambahan</label>
     <textarea name="ket_mutasi_jabatan" class="form-control" rows="2" placeholder="......" required></textarea>
   </div>

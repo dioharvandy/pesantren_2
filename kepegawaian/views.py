@@ -1,3 +1,5 @@
+from typing import Annotated
+from django.db.models.expressions import Subquery
 from django.views import generic
 from django.http import HttpResponse,HttpResponseRedirect, request
 from django.utils import timezone
@@ -312,8 +314,12 @@ def addskmutasijabatan(request):
             messages.warning(request, 'Data No Surat Mutasi Jabatan Sudah Ada.', extra_tags='danger')
             return HttpResponseRedirect(reverse('kepegawaian:indexSkMutasiJabatan'))
         else:
+            if 'file_surat' in request.FILES:
+                file_surat = request.FILES['file_surat']
+            else:
+                file_surat = False
             skmutasijabatan = Surat_mutasi_jabatan(sk_mutasi_jabatan = nosk, tanggal_mutasi_jabatan = request.POST["tanggal_mutasi_jabatan"],
-                                                    ket_mutasi_jabatan = request.POST["ket_mutasi_jabatan"])
+                                                    ket_mutasi_jabatan = request.POST["ket_mutasi_jabatan"], file_surat = file_surat)
             skmutasijabatan.save()
             messages.success(request, 'Data No Surat Mutasi Jabatan Berhasil Ditambahkan.', extra_tags='primary')
             return HttpResponseRedirect(reverse('kepegawaian:indexSkMutasiJabatan'))
@@ -362,18 +368,64 @@ class BulanTahunDetailView(generic.DetailView):
     #     except ValueError:
     #         return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
     def get_context_data(self, **kwargs):
-        # search = self.request.GET.get('search')
+        search = self.request.GET.get('search')
         context = super(BulanTahunDetailView, self).get_context_data(**kwargs)
         page_number = self.request.GET.get('page')
-        # if search:
-        #     context['gaji_jabatans'] = Gaji_jabatan.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
-        #     context['gaji_kualitass'] = Gaji_kualitas.objects.filter(Q(bulantahun_id=self.get_object()) & Q(nupy__nama_pegawai__icontains = search) | Q(nupy__nupy__icontains = search)).order_by("-created_at")
-        # else:
-        #     context['gaji_jabatans'] = Paginator(Gaji_jabatan.objects.filter(bulantahun_id=self.get_object()).order_by("-created_at"),50).get_page(page_number)
-        context['gaji_kualitass'] = Paginator(Pegawai.objects.filter(Q(gaji_kualitas__bulantahun_id=self.get_object())&Q(gaji_jabatan__bulantahun_id=self.get_object())).
-                                        annotate(gaji=Sum(F('gaji_jabatan__jabatan__gaji_pokok')*F('gaji_jabatan__kuantitas'))+
-                                                    F('gaji_kualitas__ekskul')+F('gaji_kualitas__kinerja')+F('gaji_kualitas__tunjangan')),50).get_page(page_number)
-            
+        if search:
+            context['gaji_kualitass'] = Paginator(Pegawai.objects.raw('''
+                                        select kepegawaian_pegawai.nama_pegawai, kepegawaian_pegawai.nupy,
+                                        kepegawaian_jabatan.nama_jabatan, kepegawaian_jabatan.gaji_pokok, kepegawaian_gaji_jabatan.kuantitas,
+                                        kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas as gaji_jabatan,
+                                        kepegawaian_gaji_kualitas.ekskul,kepegawaian_gaji_kualitas.kinerja,kepegawaian_gaji_kualitas.tunjangan,
+                                        totalgaji.jumlah_gaji, totalgaji.total_gaji
+                                        from
+                                        (select kepegawaian_pegawai.nupy,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja)
+                                        as jumlah_gaji,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja+kepegawaian_gaji_kualitas.tunjangan)
+                                        as total_gaji from kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id = %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s
+                                        and kepegawaian_pegawai.nupy LIKE %s
+                                        group by kepegawaian_pegawai.nupy) totalgaji, kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id =  %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s
+                                        and kepegawaian_pegawai.nupy = totalgaji.nupy       
+                                        ''', [self.kwargs['pk'],self.kwargs['pk'],'%'+search+'%',self.kwargs['pk'],self.kwargs['pk']]),50).get_page(page_number)
+        else:
+            context['gaji_kualitass'] = Paginator(Pegawai.objects.raw('''
+                                        select kepegawaian_pegawai.nama_pegawai, kepegawaian_pegawai.nupy,
+                                        kepegawaian_jabatan.nama_jabatan, kepegawaian_jabatan.gaji_pokok, kepegawaian_gaji_jabatan.kuantitas,
+                                        kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas as gaji_jabatan,
+                                        kepegawaian_gaji_kualitas.ekskul,kepegawaian_gaji_kualitas.kinerja,kepegawaian_gaji_kualitas.tunjangan,
+                                        totalgaji.jumlah_gaji, totalgaji.total_gaji
+                                        from
+                                        (select kepegawaian_pegawai.nupy,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja)
+                                        as jumlah_gaji,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja+kepegawaian_gaji_kualitas.tunjangan)
+                                        as total_gaji from kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id = %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s 
+                                        group by kepegawaian_pegawai.nupy) totalgaji, kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id =  %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s
+                                        and kepegawaian_pegawai.nupy = totalgaji.nupy       
+                                        ''', [self.kwargs['pk'],self.kwargs['pk'],self.kwargs['pk'],self.kwargs['pk']]),50).get_page(page_number)
+                                            #  annotate(gaji_jabatan=Sum(F('gaji_jabatan__jabatan__gaji_pokok')*F('gaji_jabatan__kuantitas'))+
+                                            #             F('gaji_kualitas__ekskul')+F('gaji_kualitas__kinerja')+F('gaji_kualitas__tunjangan')
         context['pegawai_list'] = Pegawai.objects.order_by('nama_pegawai')
         return context
 

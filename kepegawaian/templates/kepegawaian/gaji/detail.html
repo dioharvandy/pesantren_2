@@ -6,18 +6,6 @@
 
 {% block nav-active-gaji %} active {% endblock %}
 
-{% block searchform %} 
-      <form class="form-control-file ml-3" action="" method="GET">
-        <div class="input-group input-group-sm">
-          <input class="form-control form-control-navbar" name="search" type="search"  placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-navbar" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </form>
-{% endblock %}
 
 {% block content-header-page %}
 <li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexBulanTahun' %}">Tanggal Penggajian Pegawai</a></li>
@@ -100,7 +88,7 @@
                                   <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kinerja" class="form-control" value="0" required>
                                 </div>
                                 <div class="form-group col-md-2">
-                                  <label for="tanggal_masuk">Tunjangan</label>
+                                  <label for="tanggal_masuk">Tambahan</label>
                                   <input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="tunjangan" class="form-control" value="0" required>
                                 </div>
                                 <div class="form-group col-md-6">
@@ -119,23 +107,42 @@
     <!-- Detail Riwayat Pendidikan  -->
       <div class="card card-outline card-success">
         <div class="card-header">
-        <h3 class="card-title">
-            <i class="fas fa-users mr-1"></i>
-            Daftar Pegawai
-        </h3>
+          <div class="row justify-content-between" style="padding-top: 10px;">
+            <div class="col-4">
+              <h3 class="card-title">
+                <i class="fas fa-users mr-1"></i>
+                Daftar Pegawai
+            </h3>
+            </div>
+            <div class="col-4">
+              <form class="form-control-file ml-3" action="" method="GET">
+                <div class="input-group input-group-sm">
+                  <input class="form-control" name="search" type="search"  placeholder="Search NUPY" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div><!-- /.card-header -->
         <div class="card-body">
             <div class="tab-content p-0">
                 <!-- Morris chart - Sales -->
                 <div class="tab-pane active" id="riwayat-pendidikan">
-
                     <div class="app-table">
-                        <table id="example1" class="table table-striped table-hover table-sm table-responsive-md">
+                        <table  class=" table table-borderless table-sm table-responsive-md">
                           <thead>
-                            <tr>
-                              <th scope="col">No </th>
-                              <th scope="col">Nama Pegawai</th>
-                              <th scope="col">NUPY </th>
+                            <tr style="border: 1px solid rgb(210, 210, 210)">
+                              <th scope="col" style="width: 15%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Nama Pegawai</th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">NUPY </th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jabatan </th>
+                              <th scope="col" style="width: 10%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Gaji Jabatan</th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Ekskul </th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Kinerja </th>
+                              <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jumlah </th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Tambahan </th>
                               <!-- <th scope="col">Jabatan    
                                 <figcaption class="blockquote-footer">
                                    <small  class="text-muted">Gaji Pokok</small>
@@ -149,22 +156,33 @@
                              </figcaption></th> -->
                               <!-- <th scope="col">Ekskul</th>
                               <th scope="col">Kinerja</th> -->
-                              <th scope="col">Gaji</th>
-                              <th scope="col" style="text-align: center;">Aksi</th>
+                              <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Total </th>
+                              <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Aksi</th>
                             </tr>
                           </thead>
                           <tbody>
                           {% load mathfilters %}
                           {% load humanize %}
-                          {% for gaji_kualitas in gaji_kualitass %}                      
-                            <tr>
-                              <td><strong>{{forloop.counter}}.</strong></td>
-                              <td>{{gaji_kualitas.nama_pegawai}}</td>
-                              <td>{{gaji_kualitas.nupy}}</td>
-                              <td>Rp. {{gaji_kualitas.gaji|intcomma}}</td>
+                          {% regroup gaji_kualitass by nupy as grouped %}                    
+                          {% for group in grouped%}                                              
+                            <tr style="border: 0.5px solid rgb(210, 210, 210)">
+                              <tr>
+                                <td><strong>{{forloop.counter}}.</strong></td>
+                                </tr>
+                              {% for gaji_kualitas in group.list %} 
+                              {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_pegawai}}</td>{% endifchanged %}
+                              {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nupy}}</td>{% endifchanged %}
+                              <td style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_jabatan}}</td>
+                              <td style="text-align: center;border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.gaji_jabatan|intcomma}}</td>
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39);  text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}      
+
                               <!-- <td>gaji_kualitas.kinerja|intcomma</td>
                               <td>gaji_kualitas.tunjangan|intcomma</td> -->
-                              <td style="text-align: center;">                 
+                              {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">                
                                 <form action="{% url 'kepegawaian:detailGajiPegawai'%}" method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="id_bulan_tahun" value="{{object.id_bulan_tahun}}">
@@ -177,8 +195,9 @@
                                     <input type="hidden" name="nupy" value="{{gaji_kualitas.nupy}}">               
                                     <button onclick="return confirm('Delete Penggajian Pegawai: {{gaji_kualitas.nupy}}?')" title="Delete Gaji Pegawai" class="btn btn-sm hover"><i class="fas fa-trash-alt ihover"></i></button>
                                   </form>
-                              </td>
+                              </td>{% endifchanged %}
                             </tr>
+                          {% endfor %}
                           {% endfor %}
                           </tbody>
                         </table>

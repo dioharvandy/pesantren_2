@@ -25,7 +25,7 @@
       </ul>
   
       <!-- SEARCH FORM -->
-      {% block searchform %}  {% endblock %}
+      <!-- {% block searchform %}  {% endblock %} -->
 
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
@@ -51,15 +51,14 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          <li class="nav-item has-treeview {% block navmenuopenpegawai %} menu-open {% endblock %}">
-            <a href="" class="nav-link {% block navactivepegawai %}  {% endblock %}">
+          <li class="nav-item has-treeview {% block navmenuopenpegawai %}  {% endblock %}">
+            <a href="{% url 'kepegawaian:indexPegawai'%}" class="nav-link {% block navactivepegawai %}  {% endblock %}">
               <i class="nav-icon fas fa-users"></i>
               <p>
                  Pegawai
-                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <!-- <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="{% url 'kepegawaian:indexPegawai' %}" class="nav-link {% block subnavactivepegawai %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
@@ -67,18 +66,18 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'kepegawaian:indexDetailJabatan' %}" class="nav-link {% block subnavactivejabatan %}  {% endblock %}">
+                <a href=" class="nav-link {% block subnavactivejabatan %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Daftar Jabatan</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'kepegawaian:indexRiwayatPendidikan' %}" class="nav-link {% block subnavactiveriwayatpendidikan %}  {% endblock %}">
+                <a href="" class="nav-link {% block subnavactiveriwayatpendidikan %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
                   <p style="font-size: 95%;">Daftar Riwayat Pendidikan </p>
                 </a>
               </li>
-            </ul>
+            </ul> -->
           </li>
           <li class="nav-item has-treeview {% block nav-menu-open-mutasi-jabatan %} {% endblock %}">
             <a href="{% url 'kepegawaian:indexSkMutasiJabatan' %}" class="nav-link {% block nav-active-mutasi-jabatan %} {% endblock %}">
@@ -109,19 +108,19 @@
               <li class="nav-item">
                 <a href="{% url 'kepegawaian:indexPendidikan' %}" class="nav-link {% block subnavactivedaftarpendidikan %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Daftar Pendidikan</p>
+                  <p>Pendidikan</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'kepegawaian:indexJurusan' %}" class="nav-link {% block subnavactivedaftarjurusan %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Daftar Jurusan</p>
+                  <p>Jurusan</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'kepegawaian:indexUniversitas' %}" class="nav-link {% block subnavactivedaftaruniversitas %}  {% endblock %}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p style="font-size: 90%;">Daftar Universitas / Sekolah </p>
+                  <p>Sekolah  </p>
                 </a>
               </li>
             </ul>

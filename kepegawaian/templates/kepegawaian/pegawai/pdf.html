@@ -44,7 +44,7 @@
 
         }
         #tables td, #tables th {
-          border: 0px solid rgb(63, 63, 63);
+          border: 1px solid rgb(63, 63, 63);
         }
 
         #tables th {
@@ -57,6 +57,8 @@
         #tables td{
           text-align: center;
           padding-top: 3px;
+          padding-left: 2px;
+          padding-right: 2px;
         }
         table{
           width: 100%;
@@ -81,13 +83,15 @@
         <table id="tables">
               <tr>
                 <th class="no" style="width:20px">No</th>
-                <th style="width:150px">Nama Pegawai</th>
-                <th style="width:110px">NUPY</th>
-                <th style="width:60px">Jenis Kelamin</th>
-                <th style="width:90px">Tempat Tanggal Lahir</th>
+                <th >Nama Pegawai</th>
+                <th style="width:80px">NUPY</th>
+                <th style="width:20px">JK</th>
+                <th style="width:90px">TTL</th>
                 <th style="width:130px">Alamat</th>
                 <th style="width:65px">Nomor Telpon</th>
+                <th>Pendidikan</th>
                 <th style="width:65px">Bergabung di Yayasan</th>
+                <th>Jabatan</th>
                 <th style="width:120px">Foto</th>
                 <th style="width:90px">Ket.</th>
               </tr>
@@ -96,11 +100,25 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{pegawai.nama_pegawai}}</td>
                 <td>{{pegawai.nupy}}</td>
-                <td>{{pegawai.get_jenis_kelamin_display}}</td>
+                <td>{{pegawai.jenis_kelamin}}</td>
                 <td >{{pegawai.tempat_lahir}} {{pegawai.tanggal_lahir}}</td>                
                 <td>{{pegawai.alamat}}</td>
                 <td>{{pegawai.no_telpon}}</td>
+                <td>
+                  {% for rp in pegawai.riwayat_pendidikan_set.all%}
+                  <p>
+                    {{rp.pendidikan.pendidikan}} {{rp.jurusan.jurusan}} {{rp.universitas.universitas}}
+                  </p>
+                  {%endfor%}
+                </td>
                 <td>{{pegawai.tanggal_masuk}}</td>
+                <td>
+                  {% for jabatan in pegawai.detail_jabatan_set.all%}
+                  <p>
+                    {{jabatan.jabatan.nama_jabatan}}
+                  </p>
+                  {%endfor%}
+                </td>
                 <td style="padding-bottom: 3px;"><img src="media/{{pegawai.foto}}" width="90" height="100" alt=""></td>
                 <td>{{pegawai.ket_pegawai}}</td>
               </tr>

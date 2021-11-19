@@ -50,7 +50,7 @@
                     <div class="app-table">
                       <table class="table table-borderless table-sm table-responsive-md">
                         <thead>
-                          <tr>
+                          <tr style="border: 1px solid rgb(154, 146, 146);">
                             <th scope="col">Nama Pegawai</th>
                             <th scope="col">NUPY</th>
                             <th scope="col">Riwayat Pendidikan</th>
@@ -61,11 +61,12 @@
                         <tbody> 
                         {% regroup object_list by nupy as grouped %}                    
                         {% for group in grouped%}
+                        <tr style="border: 1px solid rgb(154, 146, 146);"></tr>
                         <tr>
                           <td><strong>{{forloop.counter}}.</strong></td>
                           </tr>
                         {% for riwayat in group.list %}
-                          <tr>
+                          
                             {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ riwayat.nupy.nama_pegawai }}</td>{% endifchanged %}
                             {% ifchanged %}<td rowspan="{{ group.list|length }}"><a href="{% url 'kepegawaian:detailPegawai' riwayat.nupy.nupy %}" title="Detail Pegawai" class="ahover">{{riwayat.nupy.nupy}}</a></td>{% endifchanged %}
                             {% if riwayat.pendidikan.pendidikan == "TIDAK ADA" and riwayat.jurusan.jurusan == "TIDAK ADA" and riwayat.universitas.universitas == "TIDAK ADA" %}

@@ -82,6 +82,7 @@ class Surat_mutasi_jabatan (models.Model):
     sk_mutasi_jabatan =  models.CharField(max_length=50, primary_key=True)
     tanggal_mutasi_jabatan = models.DateField()
     ket_mutasi_jabatan = models.TextField()
+    file_surat = models.FileField(upload_to='suratmutasijabatan/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
