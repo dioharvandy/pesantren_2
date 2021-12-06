@@ -24,12 +24,12 @@ urlpatterns = [
     path('detailpegawai/detailjabatan/<str:pk>', views.DetailJabatanDetailView.as_view(), name='detailDetailJabatan'),
     path('deletedetailjabatan', views.deletedetailjabatan, name='deleteDetailJabatan'),
     path('editdetailjabatan', views.editdetailjabatan, name='editDetailJabatan'),
-    path('printjabatan'+now, views.DetailJabatanPrintView.as_view(), name='printDetailJabatan'),
+    # path('printjabatan'+now, views.DetailJabatanPrintView.as_view(), name='printDetailJabatan'),
 
     # path('daftarriwayatpendidikan', views.RiwayatPendidikanIndexView.as_view(), name='indexRiwayatPendidikan'),
     path('addriwayatpendidikan', views.addriwayatpendidikan, name='addRiwayatPendidikan'),
     path('deleteriwayatpendidikan', views.deleteriwayatpendidikan, name='deleteRiwayatPendidikan'),
-    path('printriwayatpendidikan'+now, views.RiwayatPendidikanPrintView.as_view(), name='printRiwayatPendidikan'),
+    # path('printriwayatpendidikan'+now, views.RiwayatPendidikanPrintView.as_view(), name='printRiwayatPendidikan'),
 
     path('skmutasijabatan', views.SkMutasiJabatanIndexView.as_view(), name='indexSkMutasiJabatan'),
     path('addskmutasijabatan', views.addskmutasijabatan, name='addSkMutasiJabatan'),

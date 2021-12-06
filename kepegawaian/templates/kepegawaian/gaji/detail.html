@@ -132,9 +132,12 @@
                 <!-- Morris chart - Sales -->
                 <div class="tab-pane active" id="riwayat-pendidikan">
                     <div class="app-table">
-                        <table  class=" table table-borderless table-sm table-responsive-md">
+                        <table  class=" table table-sm table-responsive-md">
                           <thead>
                             <tr style="border: 1px solid rgb(210, 210, 210)">
+                              <tr style="border: 0.5px solid rgb(210, 210, 210)">
+                                <th><strong>No</strong></th>
+                                </tr>
                               <th scope="col" style="width: 15%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Nama Pegawai</th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">NUPY </th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jabatan </th>
@@ -166,19 +169,19 @@
                           {% regroup gaji_kualitass by nupy as grouped %}                    
                           {% for group in grouped%}                                              
                             <tr style="border: 0.5px solid rgb(210, 210, 210)">
-                              <tr>
+                              <tr style="border: 0.5px solid rgb(210, 210, 210)">
                                 <td><strong>{{forloop.counter}}.</strong></td>
                                 </tr>
                               {% for gaji_kualitas in group.list %} 
                               {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_pegawai}}</td>{% endifchanged %}
                               {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nupy}}</td>{% endifchanged %}
                               <td style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_jabatan}}</td>
-                              <td style="text-align: center;border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.gaji_jabatan|intcomma}}</td>
-                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
-                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
-                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39);  text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
-                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
-                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}      
+                              <td style="text-align: center;border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.gaji_jabatan|intcomma}}</td>
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39);  text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
+                             {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}      
 
                               <!-- <td>gaji_kualitas.kinerja|intcomma</td>
                               <td>gaji_kualitas.tunjangan|intcomma</td> -->
