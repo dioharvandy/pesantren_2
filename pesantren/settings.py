@@ -32,12 +32,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.auth',
     'kepegawaian.apps.KepegawaianConfig',
     'django.contrib.admin',
     'bootstrap_modal_forms',
     'django.contrib.humanize',
     'mathfilters',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -135,3 +135,6 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = "../../pegawai/home"
+LOGOUT_REDIRECT_URL = 'login'

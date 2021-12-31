@@ -114,9 +114,11 @@
                 <td>{{pegawai.tanggal_masuk}}</td>
                 <td>
                   {% for jabatan in pegawai.detail_jabatan_set.all%}
+                  {% if jabatan.status_jabatan == '1' %}
                   <p>
                     {{jabatan.jabatan.nama_jabatan}}
                   </p>
+                  {%endif%}
                   {%endfor%}
                 </td>
                 <td style="padding-bottom: 3px;"><img src="media/{{pegawai.foto}}" width="90" height="100" alt=""></td>

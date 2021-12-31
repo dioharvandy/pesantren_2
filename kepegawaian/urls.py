@@ -2,6 +2,7 @@ from django.urls import path
 from django.utils import timezone, dateformat
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_required
 
 from . import views
 
@@ -9,19 +10,21 @@ app_name = 'kepegawaian'
 now = timezone.localtime(timezone.now()).strftime("%d%m%Y%H%M%S")
 
 urlpatterns = [
-    # path('tp', views.tp.as_view(), name='tp'),
 
-    path('', views.PegawaiIndexView.as_view(), name='indexPegawai'),
+    path('', views.login, name='indexLogin'),
+    path('home', views.home, name='indexHome'),
+    
+    path('daftarpegawai', login_required(views.PegawaiIndexView.as_view(), login_url='../admin/login'), name='indexPegawai'),
     path('addpegawai', views.addpegawai, name='addPegawai'),
     path('deletepegawai/<str:pk>', views.deletepegawai, name='deletePegawai'),
-    path('printpegawai'+now, views.PegawaiPrintView.as_view(), name='printPegawai'),
-    path('detailpegawai/<str:pk>', views.PegawaiDetailView.as_view(), name='detailPegawai'),
+    path('printpegawai'+now, login_required(views.PegawaiPrintView.as_view(), login_url='../admin/login'), name='printPegawai'),
+    path('detailpegawai/<str:pk>', login_required(views.PegawaiDetailView.as_view(), login_url='../admin/login'), name='detailPegawai'),
     path('editpegawai', views.editpegawai, name='editPegawai'),
 
     # path('daftarjabatan', views.DetailJabatanIndexView.as_view(), name='indexDetailJabatan'),
     path('adddetailjabatan', views.adddetailjabatan, name='addDetailJabatan'),
     path('adddetailjabatanwithsk', views.adddetailjabatanwithsk, name='addDetailJabatanWithSk'),
-    path('detailpegawai/detailjabatan/<str:pk>', views.DetailJabatanDetailView.as_view(), name='detailDetailJabatan'),
+    path('detailpegawai/detailjabatan/<str:pk>', login_required(views.DetailJabatanDetailView.as_view(), login_url='../admin/login'), name='detailDetailJabatan'),
     path('deletedetailjabatan', views.deletedetailjabatan, name='deleteDetailJabatan'),
     path('editdetailjabatan', views.editdetailjabatan, name='editDetailJabatan'),
     # path('printjabatan'+now, views.DetailJabatanPrintView.as_view(), name='printDetailJabatan'),
@@ -31,18 +34,18 @@ urlpatterns = [
     path('deleteriwayatpendidikan', views.deleteriwayatpendidikan, name='deleteRiwayatPendidikan'),
     # path('printriwayatpendidikan'+now, views.RiwayatPendidikanPrintView.as_view(), name='printRiwayatPendidikan'),
 
-    path('skmutasijabatan', views.SkMutasiJabatanIndexView.as_view(), name='indexSkMutasiJabatan'),
+    path('skmutasijabatan', login_required(views.SkMutasiJabatanIndexView.as_view(), login_url='../admin/login'), name='indexSkMutasiJabatan'),
     path('addskmutasijabatan', views.addskmutasijabatan, name='addSkMutasiJabatan'),
     path('deleteskmutasijabatan/<str:pk>', views.deleteskmutasijabatan, name='deleteSkMutasiJabatan'),
-    path('detailskmutasijabatan/<str:pk>', views.SkMutasiJabatanDetailView.as_view(), name='detailSkMutasiJabatan'),
+    path('detailskmutasijabatan/<str:pk>', login_required(views.SkMutasiJabatanDetailView.as_view(), login_url='../admin/login'), name='detailSkMutasiJabatan'),
 
     path('ajax/load-jabatans/', views.load_jabatans, name='ajax_load_jabatans'),
     path('ajax/load-jabatans1/', views.load_jabatans1, name='ajax_load_jabatans1'),
 
-    path('gajipegawai', views.BulanTahunIndexView.as_view(), name='indexBulanTahun'),
+    path('gajipegawai', login_required(views.BulanTahunIndexView.as_view(), login_url='../admin/login'), name='indexBulanTahun'),
     path('addbulantahun', views.addbulantahun, name='addBulanTahun'),
     path('deletebulan-tahun/<int:pk>', views.deletebulantahun, name='deleteBulanTahun'),
-    path('detailgajipegawai/<int:pk>', views.BulanTahunDetailView.as_view(), name='detailGaji'),
+    path('detailgajipegawai/<int:pk>', login_required(views.BulanTahunDetailView.as_view(), login_url='../admin/login'), name='detailGaji'),
 
     path('addgaji', views.addgaji, name='addGaji'),
     path('deletegaji', views.deletegaji, name='deleteGaji'),
@@ -51,28 +54,28 @@ urlpatterns = [
 
 # -------------------------------------------------------MAIN DATA ---------------------------------------------------------------------
 
-    path('pendidikan', views.PendidikanIndexView.as_view(), name='indexPendidikan'),
+    path('pendidikan', login_required(views.PendidikanIndexView.as_view(), login_url='../admin/login'), name='indexPendidikan'),
     path('addpendidikan', views.addpendidikan, name='addPendidikan'),
     path('deletependidikan/<str:pk>', views.deletependidikan, name='deletePendidikan'),
-    path('detailpendidikan/<str:pk>', views.PendidikanDetailView.as_view(), name='detailPendidikan'),
+    path('detailpendidikan/<str:pk>', login_required(views.PendidikanDetailView.as_view(), login_url='../admin/login'), name='detailPendidikan'),
     path('editpendidikan', views.editpendidikan, name='editPendidikan'),
 
-    path('jurusan', views.JurusanIndexView.as_view(), name='indexJurusan'),
+    path('jurusan', login_required(views.JurusanIndexView.as_view(), login_url='../admin/login'), name='indexJurusan'),
     path('addjurusan', views.addjurusan, name='addJurusan'),
     path('deletejurusan/<str:pk>', views.deletejurusan, name='deleteJurusan'),
-    path('detailjurusan/<str:pk>', views.JurusanDetailView.as_view(), name='detailJurusan'),
+    path('detailjurusan/<str:pk>', login_required(views.JurusanDetailView.as_view(), login_url='../admin/login'), name='detailJurusan'),
     path('editjurusan', views.editjurusan, name='editJurusan'),
 
-    path('universitas', views.UniversitasIndexView.as_view(), name='indexUniversitas'),
+    path('universitas', login_required(views.UniversitasIndexView.as_view(), login_url='../admin/login'), name='indexUniversitas'),
     path('adduniversitas', views.adduniversitas, name='addUniversitas'),
     path('deleteuniversitas/<str:pk>', views.deleteuniversitas, name='deleteUniversitas'),
-    path('detailuniversitas/<str:pk>', views.UniversitasDetailView.as_view(), name='detailUniversitas'),
+    path('detailuniversitas/<str:pk>', login_required(views.UniversitasDetailView.as_view(), login_url='../admin/login'), name='detailUniversitas'),
     path('edituniversitas', views.edituniversitas, name='editUniversitas'),
 
-    path('jabatan', views.JabatanIndexView.as_view(), name='indexJabatan'),
+    path('jabatan', login_required(views.JabatanIndexView.as_view(), login_url='../admin/login'), name='indexJabatan'),
     path('addjabatan', views.addjabatan, name='addJabatan'),
     path('deletejabatan/<str:pk>', views.deletejabatan, name='deleteJabatan'),
-    path('detailjabatan/<str:pk>', views.JabatanDetailView.as_view(), name='detailJabatan'),
+    path('detailjabatan/<str:pk>', login_required(views.JabatanDetailView.as_view(), login_url='../admin/login'), name='detailJabatan'),
     path('editjabatan', views.editjabatan, name='editJabatan'),
     
 ]
