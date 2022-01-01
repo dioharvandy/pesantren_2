@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 
 
 admin.site.login = login_required(admin.site.login, login_url='../../admin/login')
-admin.site.site_header  =  "Administrasi"  
+admin.site.site_header  =  "| Shine Al-Falah"  
 admin.site.site_title  =  "Administrasi"
 admin.site.index_title  =  ""
 

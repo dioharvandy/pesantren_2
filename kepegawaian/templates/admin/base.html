@@ -1,4 +1,10 @@
 {% extends 'admin/base.html' %}
+{% load i18n %}
+
+{% block welcome-msg %}
+{% trans 'SELAMAT DATANG' %}
+<strong>{% firstof user.username %}.</strong>
+{% endblock %}
 
 {% block extrastyle %}{{ block.super }}
 <style>

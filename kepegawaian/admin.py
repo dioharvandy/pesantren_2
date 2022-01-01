@@ -15,6 +15,5 @@ class CustomUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
     )
-
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

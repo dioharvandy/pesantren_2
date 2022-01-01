@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <style type="text/css">
+        @page {
+            size: A4 landscape;
+            margin-left: 2.78cm;
+            margin-top: 1.18cm;
+            margin-right: 1.18cm;
+            margin-bottom: 1.18cm;
+            @frame footer_frame { /* Another static Frame */
+                  -pdf-frame-content: footer_content;
+                  right: -400pt; width: 512pt; bottom:  0.75cm; height: 20pt;
+                  }
+
+        }
+        img.img{
+          width: 80px;
+          zoom: 120%;
+        }
+        h1,h2{
+          font-family: 'Times New Roman';
+        }
+        h1{
+            margin: 0;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 7;
+        } 
+        h2{
+            margin: 0;
+            padding-bottom: 25px;
+            text-align: center;
+            font-size: 6;
+        }
+        #tables {
+          font-family: 'Verdana';
+          font-weight: bolder;
+          border-collapse: collapse;
+          width: 100%;
+          font-size: 7px;
+          
+
+        }
+        #tables td, #tables th {
+          border: 1px solid rgb(63, 63, 63);
+        }
+
+        #tables th {
+          text-align: center;
+          background-color: #00b06f;
+          color: white;
+          padding-top: 3px;
+          padding-bottom: 1px;
+        }
+        #tables td{
+          text-align: center;
+          padding-top: 3px;
+          padding-left: 2px;
+          padding-right: 2px;
+        }
+        table{
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: 5px;
+          background-color: #fff;
+          
+        }
+    </style>
+</head>
+<body>
+  <div id="footer_content">(c) - Halaman <pdf:pagenumber>
+    / <pdf:pagecount>
+  </div>
+  
+  <header >
+      <img class="img" src="kepegawaian/AdminLTE/dist/img/shinealfalah.png" alt="">
+      <h1>Data Penggajian Pegawai Yayasan Shine Al-falah</h1>
+      <h2><strong> {{bulantahuns.0.get_bulan_display}} {{bulantahuns.0.tahun}}</strong></h2>
+  </header>
+
+        <table id="tables">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Pegawai</th>
+                <th style="text-align: center;">NUPY </th>
+                <th style="text-align: center;">Jabatan </th>
+                <th style="width: 10%;">Gaji Jabatan</th>
+                <th style="text-align: center;">Ekskul </th>
+                <th style="text-align: center;">Kinerja </th>
+                <th>Jumlah </th>
+                <th style="text-align: center;">Tambahan </th>
+                <th>Total </th>
+              </tr>
+            </thead>
+            <tbody>
+                {% load mathfilters %}
+                {% load humanize %}
+                {% regroup gaji_kualitass by nupy as grouped %}                    
+                {% for group in grouped%}        
+                    <tr>
+                        <th style="border: none; background-color: rgb(252, 252, 252); color: #000;"><strong>{{forloop.counter}}.</strong></th>
+                    </tr>      
+                <tr>                                
+                    {% for gaji_kualitas in group.list %} 
+                    {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">{{gaji_kualitas.nama_pegawai}}</td>{% endifchanged %}
+                    {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">{{gaji_kualitas.nupy}}</td>{% endifchanged %}
+                    <td style="text-align: center;">{{gaji_kualitas.nama_jabatan}}</td>
+                    <td style="text-align: center">Rp. {{gaji_kualitas.gaji_jabatan|intcomma}}</td>
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">Rp. {{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">Rp. {{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(0, 0, 0); background-color: #5fdca6; text-align: center;">Rp. {{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; ">Rp. {{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(0, 0, 0); text-align: center; background-color: #5fdca6;">Rp. {{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}  
+              </tr>
+            {% endfor %}
+            {% endfor %}
+           </tbody>
+          </table>  
+          <br>
+          <br>
+          <table style="page-break-before: auto;">
+            <tr >
+              <th></th>
+              <th></th>
+              <th style="width:150px">
+                <p style="text-align: center;">Padang, {{ today | date:"d  F  Y" }}</p>
+                <br>
+                <br>
+                <br>
+                <br>
+              </th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th style="border-top: solid black; text-align: center; padding-top: 3px;">
+                <p>Ketua Umum</p>
+              </th>
+            </tr>
+          </table>
+</body>
+</html>

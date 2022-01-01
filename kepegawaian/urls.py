@@ -46,6 +46,7 @@ urlpatterns = [
     path('addbulantahun', views.addbulantahun, name='addBulanTahun'),
     path('deletebulan-tahun/<int:pk>', views.deletebulantahun, name='deleteBulanTahun'),
     path('detailgajipegawai/<int:pk>', login_required(views.BulanTahunDetailView.as_view(), login_url='../admin/login'), name='detailGaji'),
+    path('printgajipegawai'+now, views.gajipegawaiPrintView, name='printGajiPegawai'),
 
     path('addgaji', views.addgaji, name='addGaji'),
     path('deletegaji', views.deletegaji, name='deleteGaji'),

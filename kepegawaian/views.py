@@ -258,30 +258,46 @@ class PegawaiPrintView(generic.View):
         pdf = render_to_pdf('kepegawaian/pegawai/pdf.html',params) #getting the template
         return HttpResponse(pdf, content_type='application/pdf')  #rendering the template
 
-# class DetailJabatanPrintView(generic.View):
-#      def get(self, request, *args, **kwargs):
-#         jabatan = Detail_jabatan.objects.filter(status_jabatan="1").order_by("nupy")
-#         today = timezone.now()
-#         params = {
-#             'jabatans':jabatan,
-#             'today': today,
-#             'request': request
-#         }
-#         pdf = render_to_pdf('kepegawaian/detail_pegawai/pdfdetail_jabatan.html',params)
-#         return HttpResponse(pdf, content_type='application/pdf')
-
-# class RiwayatPendidikanPrintView(generic.View):
-#      def get(self, request, *args, **kwargs):
-#         pendidikan = Riwayat_pendidikan.objects.order_by("nupy")
-#         today = timezone.now()
-#         params = {
-#             'pendidikans':pendidikan,
-#             'today': today,
-#             'request': request
-#         }
-
-#         pdf = render_to_pdf('kepegawaian/detail_pegawai/pdfriwayat_pendidikan.html',params)
-#         return HttpResponse(pdf, content_type='application/pdf')
+@login_required(login_url='../admin/login')
+def gajipegawaiPrintView(request):
+    if request.method == "POST":
+        bulantahun = BulanTahun.objects.filter(id_bulan_tahun = request.POST["id_bulan_tahun"])
+        gaji_kualitas = Pegawai.objects.raw('''
+                                        select kepegawaian_pegawai.nama_pegawai, kepegawaian_pegawai.nupy,
+                                        kepegawaian_jabatan.nama_jabatan, kepegawaian_jabatan.gaji_pokok, kepegawaian_gaji_jabatan.kuantitas,
+                                        kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas as gaji_jabatan,
+                                        kepegawaian_gaji_kualitas.ekskul,kepegawaian_gaji_kualitas.kinerja,kepegawaian_gaji_kualitas.tunjangan,
+                                        totalgaji.jumlah_gaji, totalgaji.total_gaji
+                                        from
+                                        (select kepegawaian_pegawai.nupy,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja)
+                                        as jumlah_gaji,
+                                        SUM(kepegawaian_jabatan.gaji_pokok*kepegawaian_gaji_jabatan.kuantitas)+
+                                        (kepegawaian_gaji_kualitas.ekskul+kepegawaian_gaji_kualitas.kinerja+kepegawaian_gaji_kualitas.tunjangan)
+                                        as total_gaji from kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id = %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s 
+                                        group by kepegawaian_pegawai.nupy) totalgaji, kepegawaian_pegawai
+                                        join kepegawaian_gaji_jabatan on kepegawaian_gaji_jabatan.nupy = kepegawaian_pegawai.nupy
+                                        join kepegawaian_jabatan on kepegawaian_jabatan.id_jabatan = kepegawaian_gaji_jabatan.jabatan_id
+                                        join kepegawaian_gaji_kualitas on kepegawaian_gaji_kualitas.nupy = kepegawaian_pegawai.nupy
+                                        where kepegawaian_gaji_jabatan.bulantahun_id =  %s and kepegawaian_gaji_kualitas.bulantahun_id =  %s
+                                        and kepegawaian_pegawai.nupy = totalgaji.nupy       
+                                        ''', [request.POST["id_bulan_tahun"],request.POST["id_bulan_tahun"],request.POST["id_bulan_tahun"],request.POST["id_bulan_tahun"]])
+        today = timezone.now()
+        params = {
+            'gaji_kualitass': gaji_kualitas,
+            'today': today,
+            'bulantahuns': bulantahun,
+            'request': request
+        }                                
+        pdf = render_to_pdf('kepegawaian/gaji/pdfgaji.html',params) #getting the template
+        return HttpResponse(pdf, content_type='application/pdf')  #rendering the template
+    else:
+       return HttpResponseRedirect(reverse('kepegawaian:indexBulanTahun'))
 
 @login_required(login_url='../admin/login')
 def detailgajiPrintView(request):

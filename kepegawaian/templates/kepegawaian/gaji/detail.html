@@ -12,6 +12,14 @@
 <li class="breadcrumb-item active"><a href="{% url 'kepegawaian:detailGaji' object.id_bulan_tahun %}">{{object.get_bulan_display}} {{object.tahun}}</a> </li>
 {% endblock content-header-page %}
 
+{% block print %}
+<form action="{% url 'kepegawaian:printGajiPegawai'%}" method="POST" target="_blank">
+  {% csrf_token %}
+  <input type="hidden" name="id_bulan_tahun" value="{{object.id_bulan_tahun}}">             
+  <button  title="Print Gaji Pegawai" class="btn btn-sm hover"><i class="fas fa-print" style="color: rgb(0, 0, 0);"></i>Print</button>
+</form>
+{% endblock print %}
+
 {% block content %}
 <style> i.ihover{color: rgb(164, 44, 44);}i.ihover:hover{color: rgb(228, 79, 79);} i.dhover{color: rgb(22, 100, 62);} i.dhover:hover{color: rgb(56, 167, 102);}</style> 
 <div class="row">
@@ -43,37 +51,6 @@
                                    </select>
                                 </div>
                             </div>
-                            <!-- <div class="app-table">
-                                <table class="table table-borderless table-sm table-responsive-md">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Jabatan</th>
-                                      <th scope="col">Gaji Pokok Jabatan</th>
-                                      <th scope="col">Kuantitas</th>
-                                      <th scope="col">Ekskul</th>
-                                      <th scope="col">Kinerja</th>
-                                      <th scope="col">Tunjangan</th>
-                                      <th scope="col">Keterangan Tambahan</th>
-                                      <th scope="col"></th>
-                                    </tr>
-                                  </thead>
-                                  <tbody> 
-                                    <tbody id="id_jabatan_lama">                    
-                                        
-                                    </tbody>  
-                                    <tr>
-                                        <td><input type="hidden" name="bulantahun" value="{{object.id_bulan_tahun}}"></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="ekskul" class="form-control" value="0" required></td>
-                                        <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="kinerja" class="form-control" value="0" required></td>
-                                        <td><input type="number"  min="0" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" name="tunjangan" class="form-control" value="0" required></td>
-                                        <td><textarea name="ket_gaji" class="form-control" rows="2" placeholder="......" required></textarea></td>
-                                        <td><button type="submit" class="btn btn-primary">Tambah</button></td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div> -->
                               <div id="id_jabatan_lama">
 
                               </div>
@@ -135,10 +112,7 @@
                         <table  class=" table table-sm table-responsive-md">
                           <thead>
                             <tr style="border: 1px solid rgb(210, 210, 210)">
-                              <tr style="border: 0.5px solid rgb(210, 210, 210)">
-                                <th><strong>No</strong></th>
-                                </tr>
-                              <th scope="col" style="width: 15%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Nama Pegawai</th>
+                              <th scope="col" style="width: 15%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Pegawai</th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">NUPY </th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jabatan </th>
                               <th scope="col" style="width: 10%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Gaji Jabatan</th>
@@ -146,19 +120,6 @@
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Kinerja </th>
                               <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jumlah </th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Tambahan </th>
-                              <!-- <th scope="col">Jabatan    
-                                <figcaption class="blockquote-footer">
-                                   <small  class="text-muted">Gaji Pokok</small>
-                                </figcaption>
-                              </th>
-                              <th scope="col">Kuantitas
-                              </th>
-                              <th scope="col">Gaji Jabatan
-                              <figcaption class="blockquote-footer">
-                                <small  class="text-muted">Gaji Pokok x Kuantitas</small>
-                             </figcaption></th> -->
-                              <!-- <th scope="col">Ekskul</th>
-                              <th scope="col">Kinerja</th> -->
                               <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Total </th>
                               <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Aksi</th>
                             </tr>
