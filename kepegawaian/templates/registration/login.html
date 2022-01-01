@@ -20,11 +20,18 @@
     <!-- /.login-logo -->
     <div class="card">
       <div class="card-body login-card-body">
+
       {% if user.is_authenticated %}
         <p>You are already Login</p>
         <a href="{% url 'kepegawaian:indexHome'%}">Home</a>
+
       {% else %}
-        <p class="login-box-msg">Sign in to start your session</p>
+        <p class="login-box-msg">Log in to start your session</p>
+
+        {% if next %}
+          <p class=" text-danger">Please log in to see <strong>this</strong> page.</p>
+        {% endif %}
+        
         <form method="post">
           {% csrf_token %}
           <div class="input-group mb-3">
@@ -46,17 +53,19 @@
           <div class="row">
             <!-- /.col -->
             <div class="col">
-              <button type="submit" class="btn btn-success btn-block">Sign In</button>
+              <button type="submit" class="btn btn-success btn-block">Log In</button>
             </div>
             <!-- /.col -->
           </div>
         </form>
+
         {% if form.errors %}
-        <p class=" label label-danger">
-            Your username and password didn't match. 
+        <p class=" text-danger">
+            Your <strong>username and password</strong> didn't match. 
             Please try again.
         </p>
         {% endif %}
+        
         {% endif %}
       </div>
       <!-- /.login-card-body -->

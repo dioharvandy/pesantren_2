@@ -30,8 +30,8 @@
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}" title="Logout" >
-            <i class="fas fa-sign-out-alt"></i>
+          <a class="nav-link" href="{% url 'logout' %}" title="Logout" onclick="return confirm('Logout?')">
+            {{ user.username|default:'Guest'|upper }} <i class="fas fa-sign-out-alt"></i>
           </a>
         </li>
       </ul>
@@ -84,7 +84,7 @@
             </a>
           </li>
           <li class="nav-header">MAIN DATA</li>
-          <li class="nav-item has-treeview {% block navmenuopenriwayatpendidikan %} menu-open {% endblock %}">
+          <li class="nav-item has-treeview {% block navmenuopenriwayatpendidikan %} {% endblock %}">
             <a href="" class="nav-link {% block navactiveriwayatpendidikan %}  {% endblock %}">
               <i class="nav-icon fas fa-user-graduate"></i>
               <p>
