@@ -59,6 +59,29 @@
               </p>
             </a>
           </li>
+          {% if user.is_staff and user.pegawai %}
+          <li class="nav-item has-treeview {% block navmenuopenprofile %}  {% endblock %}">
+            <a href="{% url 'kepegawaian:indexPegawai'%}" class="nav-link {% block navactiveprofile %}  {% endblock %}">
+              <i class="nav-icon fas fa-user"></i>
+              <p>
+                 Profile
+              </p>
+            </a>
+          </li>
+          <li class="nav-item has-treeview {% block nav-menu-open-gajip %} {% endblock %} ">
+            <a href="{% url 'kepegawaian:indexBulanTahun' %}" class="nav-link {% block nav-active-gajip %}  {% endblock %}">
+              <i class="nav-icon fas fa-wallet"></i>
+              <p>
+                {% if user.is_esp %}
+                Gaji Pegawai
+                {%else%}
+                Gaji
+                {% endif %}
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          {% if user.is_superuser %}
           <li class="nav-item has-treeview {% block navmenuopenpegawai %}  {% endblock %}">
             <a href="{% url 'kepegawaian:indexPegawai'%}" class="nav-link {% block navactivepegawai %}  {% endblock %}">
               <i class="nav-icon fas fa-users"></i>
@@ -79,7 +102,7 @@
             <a href="{% url 'kepegawaian:indexBulanTahun' %}" class="nav-link {% block nav-active-gaji %}  {% endblock %}">
               <i class="nav-icon fas fa-wallet"></i>
               <p>
-                Gaji
+                Gaji Pegawai
               </p>
             </a>
           </li>
@@ -122,6 +145,7 @@
             </a>
           </li>
         </ul>
+        {% endif %}
       </nav>
       <!-- /.sidebar-menu -->
     </div>

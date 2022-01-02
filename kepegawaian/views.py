@@ -2,6 +2,7 @@ from typing import Annotated
 from django.db.models.expressions import Subquery
 from django.views import generic
 from django.http import HttpResponse,HttpResponseRedirect, request
+from .models import CustomUser as User
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -10,8 +11,9 @@ from django.contrib import messages
 from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from .models import BulanTahun, Gaji_jabatan, Gaji_kualitas, Jabatan, Jurusan, Pegawai, Pendidikan,Surat_mutasi_jabatan, Detail_jabatan, Riwayat_pendidikan, Universitas
 
@@ -20,12 +22,16 @@ from .models import BulanTahun, Gaji_jabatan, Gaji_kualitas, Jabatan, Jurusan, P
 def login(request):
     return redirect('pegawai/home')
 
+class SuperuserRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
 @login_required(login_url='../admin/login')
 def home(request):
     return render(request, 'kepegawaian/home.html')
 
 # PEGAWAI
-
 class PegawaiIndexView(generic.ListView):
     model = Pegawai
     template_name = 'kepegawaian/pegawai/index.html'
@@ -45,7 +51,7 @@ class PegawaiIndexView(generic.ListView):
         else:
             return Pegawai.objects.order_by('tanggal_masuk')
 
-class PegawaiDetailView(generic.DetailView):
+class PegawaiDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Pegawai
     template_name = 'kepegawaian/pegawai/detail.html'
 
@@ -60,9 +66,10 @@ class PegawaiDetailView(generic.DetailView):
         return context
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addpegawai(request):
     if request.method == "POST":
-        nupy = request.POST['nupy1'].upper()+"-"+request.POST['nupy2']+"-"+request.POST['nupy3']+"-"+request.POST['nupy4']
+        nupy = request.POST['nupy1'].upper()+request.POST['nupy2']+request.POST['nupy3']+request.POST['nupy4']
 
         if Pegawai.objects.filter(nupy=nupy).exists():
             messages.warning(request, 'Data Pegawai Sudah Ada.', extra_tags='danger')
@@ -72,7 +79,10 @@ def addpegawai(request):
                 foto = request.FILES['foto']
             else:
                 foto = False
-            savepegawai = Pegawai(nama_pegawai = request.POST['nama_pegawai'].title() ,nupy = nupy ,jenis_kelamin = request.POST['jenis_kelamin'] ,
+            user = User.objects.create_user(username = nupy, password = request.POST['no_telpon'], nama = request.POST['nama_pegawai'], is_staff = True )
+            user.save()
+            nama = User.objects.get(username = nupy)
+            savepegawai = Pegawai(nama_pegawai = request.POST['nama_pegawai'].title() ,nupy = nupy, user = nama, jenis_kelamin = request.POST['jenis_kelamin'] ,
                             tempat_lahir = request.POST['tempat_lahir'] ,tanggal_lahir = request.POST['tanggal_lahir'] ,alamat = request.POST['alamat'].title() ,
                             no_telpon = request.POST['no_telpon'] ,tanggal_masuk = request.POST['tanggal_masuk'],
                             foto = foto ,ket_pegawai = request.POST['ket_pegawai'])    
@@ -83,6 +93,7 @@ def addpegawai(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def editpegawai(request):
     if request.method == "POST":
         updatepegawai = Pegawai.objects.filter(nupy = request.POST["nupy"])
@@ -104,9 +115,12 @@ def editpegawai(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deletepegawai(request, pk):
     pegawai = get_object_or_404(Pegawai, pk=pk)
     pegawai.delete()
+    user = get_object_or_404(User, username=pk)
+    user.delete()
     messages.warning(request, 'Data Pegawai Berhasil Dihapus.', extra_tags='danger')
     return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 # END PEGAWAI
@@ -124,6 +138,7 @@ def deletepegawai(request, pk):
 #             return Riwayat_pendidikan.objects.order_by("nupy")
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addriwayatpendidikan(request):
     if request.method == "POST":
         nup =  request.POST['nupy']
@@ -150,6 +165,7 @@ def addriwayatpendidikan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deleteriwayatpendidikan(request):
     if request.method == "POST":
         pendidikan = get_object_or_404(Riwayat_pendidikan, pk=request.POST['pendidikan'])
@@ -173,11 +189,12 @@ def deleteriwayatpendidikan(request):
 #         else:
 #             return Detail_jabatan.objects.filter(status_jabatan="1").order_by("nupy")
 
-class DetailJabatanDetailView(generic.DetailView):
+class DetailJabatanDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Detail_jabatan
     template_name = 'kepegawaian/pegawai/detailjabatan.html'
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def adddetailjabatan(request):
     if request.method == "POST":
         nupy = Pegawai.objects.get(nupy = request.POST['nupy'])
@@ -195,6 +212,7 @@ def adddetailjabatan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def adddetailjabatanwithsk(request):
     if request.method == "POST":
         nupy = Pegawai.objects.get(nupy = request.POST['nupy'])
@@ -219,6 +237,7 @@ def adddetailjabatanwithsk(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def editdetailjabatan(request):
     if request.method == "POST":
         Detail_jabatan.objects.filter(id_detail_jabatan = request.POST['jabatan_id']).update(status_jabatan = request.POST['status_jabatan'])
@@ -228,6 +247,7 @@ def editdetailjabatan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deletedetailjabatan(request):
     if request.method == "POST":
         detailjabatan = get_object_or_404(Detail_jabatan, pk=request.POST['jabatan'])
@@ -244,7 +264,7 @@ def deletedetailjabatan(request):
 # END DETAIL JABATAN
 
 # PRINT TO PDF
-class PegawaiPrintView(generic.View):
+class PegawaiPrintView(SuperuserRequiredMixin, generic.View):
      def get(self, request, *args, **kwargs):
         pegawai = Pegawai.objects.order_by('tanggal_masuk')
         # pegawai = Pegawai.objects.all().order_by('status_pegawai','lembaga_id')
@@ -259,6 +279,7 @@ class PegawaiPrintView(generic.View):
         return HttpResponse(pdf, content_type='application/pdf')  #rendering the template
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser or u.is_esp)
 def gajipegawaiPrintView(request):
     if request.method == "POST":
         bulantahun = BulanTahun.objects.filter(id_bulan_tahun = request.POST["id_bulan_tahun"])
@@ -317,7 +338,7 @@ class tp(generic.ListView):
 # END TEST DOANG
 
 # SURAT MUTASI JABATAN
-class SkMutasiJabatanIndexView(generic.ListView):
+class SkMutasiJabatanIndexView(SuperuserRequiredMixin, generic.ListView):
     model = Surat_mutasi_jabatan
     template_name = 'kepegawaian/mutasi_jabatan/index.html'
     paginate_by = 50
@@ -329,7 +350,7 @@ class SkMutasiJabatanIndexView(generic.ListView):
         else:
             return Surat_mutasi_jabatan.objects.order_by("-tanggal_mutasi_jabatan")
 
-class SkMutasiJabatanDetailView(generic.DetailView):
+class SkMutasiJabatanDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Surat_mutasi_jabatan
     template_name = 'kepegawaian/mutasi_jabatan/detail.html'
     def get_context_data(self, **kwargs):
@@ -340,6 +361,7 @@ class SkMutasiJabatanDetailView(generic.DetailView):
         return context
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addskmutasijabatan(request):
     if request.method == "POST":
         nosk = request.POST["nosk1"]+"-"+request.POST["nosk2"].upper()+"-"+request.POST["nosk3"].upper()+"-"+request.POST["nosk4"].upper()+"-"+request.POST["nosk5"]
@@ -362,6 +384,7 @@ def addskmutasijabatan(request):
        return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deleteskmutasijabatan(request, pk):
     skmutasijabatan = get_object_or_404(Surat_mutasi_jabatan, pk=pk)
     skmutasijabatan.delete()
@@ -467,6 +490,7 @@ class BulanTahunDetailView(generic.DetailView):
         return context
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser or u.is_esp)
 def addbulantahun(request):
     if request.method == "POST":
         try:
@@ -482,6 +506,7 @@ def addbulantahun(request):
        return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser or u.is_esp)
 def deletebulantahun(request, pk):
     bulantahun = get_object_or_404(BulanTahun, pk=pk)
     bulantahun.delete()
@@ -491,6 +516,7 @@ def deletebulantahun(request, pk):
 
 # GAJI
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser or u.is_esp)
 def addgaji(request):
     if request.method == "POST":
         nupy = Pegawai.objects.get(nupy = request.POST["nupy"])
@@ -513,6 +539,7 @@ def addgaji(request):
        return HttpResponseRedirect(reverse('kepegawaian:indexGaji'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser or u.is_esp)
 def deletegaji(request):
     if request.method == "POST":
         gaji_jabatan = Gaji_jabatan.objects.filter(Q(nupy = request.POST["nupy"]) & Q(bulantahun_id = request.POST["id_bulan_tahun"]))
@@ -539,16 +566,17 @@ def detailgaji(request):
 # -----------------------------------------------------------MAIN DATA------------------------------------------------------------------
 
 # PENDIDIKAN
-class PendidikanIndexView(generic.ListView):
+class PendidikanIndexView(SuperuserRequiredMixin, generic.ListView):
     model = Pendidikan
     template_name = 'kepegawaian/main_data/pendidikan/index.html'
     paginate_by = 50
 
-class PendidikanDetailView(generic.DetailView):
+class PendidikanDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Pendidikan
     template_name = 'kepegawaian/main_data/pendidikan/detail.html'
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addpendidikan(request):
     if request.method == "POST":
         if Pendidikan.objects.filter(pendidikan=request.POST['pendidikan'].upper()).exists():
@@ -563,6 +591,7 @@ def addpendidikan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def editpendidikan(request):
     if request.method == "POST":
         updatependidikan = Pendidikan.objects.filter(id_pendidikan = request.POST["id_pendidikan"])
@@ -578,6 +607,7 @@ def editpendidikan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexPegawai'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deletependidikan(request, pk):
     pendidikan = get_object_or_404(Pendidikan, pk=pk)
     pendidikan.delete()
@@ -586,16 +616,17 @@ def deletependidikan(request, pk):
 # END PENDIDIKAN
 
 # JURUSAN
-class JurusanIndexView(generic.ListView):
+class JurusanIndexView(SuperuserRequiredMixin, generic.ListView):
     model = Jurusan
     template_name = 'kepegawaian/main_data/jurusan/index.html'
     paginate_by = 50
 
-class JurusanDetailView(generic.DetailView):
+class JurusanDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Jurusan
     template_name = 'kepegawaian/main_data/jurusan/detail.html'
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addjurusan(request):
     if request.method == "POST":
         if Jurusan.objects.filter(jurusan=request.POST['jurusan'].upper()).exists():
@@ -610,6 +641,7 @@ def addjurusan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexJurusan'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def editjurusan(request):
     if request.method == "POST":
         updatejurusan = Jurusan.objects.filter(id_jurusan = request.POST["id_jurusan"])
@@ -625,6 +657,7 @@ def editjurusan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexJurusan'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deletejurusan(request, pk):
     jurusan = get_object_or_404(Jurusan, pk=pk)
     jurusan.delete()
@@ -633,16 +666,17 @@ def deletejurusan(request, pk):
 # END JURUSAN
 
 # UNIVERSITAS
-class UniversitasIndexView(generic.ListView):
+class UniversitasIndexView(SuperuserRequiredMixin, generic.ListView):
     model = Universitas
     template_name = 'kepegawaian/main_data/universitas/index.html'
     paginate_by = 50
 
-class UniversitasDetailView(generic.DetailView):
+class UniversitasDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Universitas
     template_name = 'kepegawaian/main_data/universitas/detail.html'
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def adduniversitas(request):
     if request.method == "POST":
         if Universitas.objects.filter(universitas=request.POST['universitas'].upper()).exists():
@@ -657,6 +691,7 @@ def adduniversitas(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def edituniversitas(request):
     if request.method == "POST":
         updateuniversitas = Universitas.objects.filter(id_universitas = request.POST["id_universitas"])
@@ -672,6 +707,7 @@ def edituniversitas(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexUniversitas'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deleteuniversitas(request, pk):
     universitas = get_object_or_404(Universitas, pk=pk)
     universitas.delete()
@@ -680,16 +716,17 @@ def deleteuniversitas(request, pk):
 # END UNIVERSITAS
 
 # JABATAN
-class JabatanIndexView(generic.ListView):
+class JabatanIndexView(SuperuserRequiredMixin, generic.ListView):
     model = Jabatan
     template_name = 'kepegawaian/main_data/jabatan/index.html'
     paginate_by = 50
 
-class JabatanDetailView(generic.DetailView):
+class JabatanDetailView(SuperuserRequiredMixin, generic.DetailView):
     model = Jabatan
     template_name = 'kepegawaian/main_data/jabatan/detail.html'
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def addjabatan(request):
     if request.method == "POST":
         if Jabatan.objects.filter(Q(nama_jabatan = request.POST['jabatan'].upper()) & Q(gaji_pokok = request.POST['gaji_pokok']) & 
@@ -706,6 +743,7 @@ def addjabatan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def editjabatan(request):
     if request.method == "POST":
         updatejabatan = Jabatan.objects.filter(id_jabatan = request.POST["id_jabatan"])
@@ -723,6 +761,7 @@ def editjabatan(request):
         return HttpResponseRedirect(reverse('kepegawaian:indexJabatan'))
 
 @login_required(login_url='../admin/login')
+@user_passes_test(lambda u: u.is_superuser)
 def deletejabatan(request, pk):
     jabatan = get_object_or_404(Jabatan, pk=pk)
     jabatan.delete()

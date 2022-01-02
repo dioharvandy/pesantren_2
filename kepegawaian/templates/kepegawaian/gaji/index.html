@@ -2,9 +2,19 @@
 
 {% block title %} Gaji {% endblock title %}
 
+{% if user.is_staff and user.pegawai %}
+
+{% block nav-menu-open-gajip %} menu-open {% endblock %}
+
+{% block nav-active-gajip %} active {% endblock %}
+
+{% elif user.is_superuser or user.is_esp %}
+
 {% block nav-menu-open-gaji %} menu-open {% endblock %}
 
 {% block nav-active-gaji %} active {% endblock %}
+
+{%endif%}
 
 {% block content-header-page %}
 <li class="breadcrumb-item"><a href="{% url 'kepegawaian:indexBulanTahun' %}">Tanggal Penggajian Pegawai</a></li>
@@ -23,6 +33,7 @@
             <i class="fas fa-wallet mr-1"></i>
             Daftar Tanggal Penggajian
           </h3>
+        {% if user.is_superuser or user.is_esp %}
         <div class="card-tools">
           <ul class="nav nav-pills ml-auto">
             <li class="nav-item">
@@ -33,6 +44,7 @@
             </li>
           </ul>
         </div>
+        {%endif%}
           </div><!-- /.card-header -->
         <div class="card-body">
           <div class="tab-content p-0">

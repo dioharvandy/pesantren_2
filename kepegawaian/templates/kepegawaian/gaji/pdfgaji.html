@@ -83,10 +83,10 @@
         <table id="tables">
             <thead>
               <tr>
-                <th style="width: 15%;">Pegawai</th>
+                <th style="width: 20%;">Pegawai</th>
                 <th style="text-align: center;">NUPY </th>
-                <th style="text-align: center;">Jabatan </th>
-                <th style="width: 10%;">Gaji Jabatan</th>
+                <th style="text-align: center; width: 20%;">Jabatan </th>
+                <th>Gaji Jabatan</th>
                 <th style="text-align: center;">Ekskul </th>
                 <th style="text-align: center;">Kinerja </th>
                 <th>Jumlah </th>
@@ -110,9 +110,9 @@
                     <td style="text-align: center">Rp. {{gaji_kualitas.gaji_jabatan|intcomma}}</td>
                    {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">Rp. {{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
                    {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center;">Rp. {{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
-                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(0, 0, 0); background-color: #5fdca6; text-align: center;">Rp. {{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(255, 255, 255); background-color: #00b06f; text-align: center;">Rp. {{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
                    {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; ">Rp. {{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
-                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(0, 0, 0); text-align: center; background-color: #5fdca6;">Rp. {{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}  
+                   {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(255, 255, 255); text-align: center; background-color: #00b06f;">Rp. {{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}  
               </tr>
             {% endfor %}
             {% endfor %}

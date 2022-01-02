@@ -1,0 +1,51 @@
+<div class="app-table">
+    <table  class=" table table-sm table-responsive-md">
+      <thead>
+        <tr style="border: 1px solid rgb(210, 210, 210)">
+          <th scope="col" style="width: 15%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Pegawai</th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">NUPY </th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jabatan </th>
+          <th scope="col" style="width: 10%; text-align: center; border: 0.5px solid rgb(210, 210, 210)">Gaji Jabatan</th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Ekskul </th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Kinerja </th>
+          <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Jumlah </th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Tambahan </th>
+          <th scope="col" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Total </th>
+          <th scope="col" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% load mathfilters %}
+      {% load humanize %}
+      {% regroup gaji_kualitass by nupy as grouped %}                    
+      {% for group in grouped%}                                              
+        <tr style="border: 0.5px solid rgb(210, 210, 210)">
+          {% for gaji_kualitas in group.list %} 
+          {%if user.pegawai.nupy == gaji_kualitas.nupy%}
+          {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_pegawai}}</td>{% endifchanged %}
+          {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nupy}}</td>{% endifchanged %}
+          <td style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">{{gaji_kualitas.nama_jabatan}}</td>
+          <td style="text-align: center;border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.gaji_jabatan|intcomma}}</td>
+         {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.ekskul|intcomma}} </td> {% endifchanged %}    
+         {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.kinerja|intcomma}} </td>{% endifchanged %}
+         {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39);  text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.jumlah_gaji|intcomma}} </td>{% endifchanged %}
+         {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.tunjangan|intcomma}} </td>    {% endifchanged %}     
+         {% ifchanged %}<td rowspan="{{ group.list|length }}" style="color: rgb(5, 154, 39); text-align: center; border: 0.5px solid rgb(210, 210, 210)">Rp. {{gaji_kualitas.total_gaji|intcomma}} </td>  {% endifchanged %}      
+
+          <!-- <td>gaji_kualitas.kinerja|intcomma</td>
+          <td>gaji_kualitas.tunjangan|intcomma</td> -->
+          {% ifchanged %}<td rowspan="{{ group.list|length }}" style="text-align: center; border: 0.5px solid rgb(210, 210, 210)">                
+            <form action="{% url 'kepegawaian:detailGajiPegawai'%}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id_bulan_tahun" value="{{object.id_bulan_tahun}}">
+                <input type="hidden" name="nupy" value="{{gaji_kualitas.nupy}}">               
+                <button  title="Detail Gaji Pegawai" class="btn btn-sm hover"><i class="fas fa-eye dhover"></i></button>
+              </form>
+          </td>{% endifchanged %}
+          {%endif%}
+        </tr>
+      {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>

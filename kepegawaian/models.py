@@ -4,8 +4,15 @@ from django.db.models.deletion import CASCADE
 from django.db.models.fields import CharField
 from django.conf import settings
 import os
-
 # Create your models here.
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    first_name = None
+    last_name = None
+    nama = models.CharField(max_length=50)
+    is_staff = models.BooleanField(default=False, help_text = "Menentukan apakah pengguna dapat masuk ke halaman ini dan merupakan staff", verbose_name = "Status staff")
+    is_esp = models.BooleanField(default=False, help_text = "Menentukan apakah pengguna merupakan bendahara", verbose_name = "Status bendahara")
 
 class Pendidikan (models.Model):
     id_pendidikan = models.BigAutoField(primary_key=True)
@@ -49,6 +56,7 @@ class Riwayat_pendidikan (models.Model):
         return str(self.nupy)
 
 class Pegawai (models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, default=None)
     nupy =  models.CharField(max_length=50, primary_key=True)
     nama_pegawai = models.CharField(max_length=50)
     JKS = (
