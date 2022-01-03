@@ -1,27 +1,97 @@
-<p>
-NUPY : {{user.pegawai.nupy}}
-</p>
-<p>
-Nama Pegawai : {{user.pegawai.nama_pegawai}} 
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
-<p>
-    
-</p>
+<div class="container">
+    <div class="row">
+      <div class="col">
+        <img src="{{user.pegawai.foto.url}}" alt="Foto Pegawai {{user.pegawai.nupy}}" class="mr-3" width="80%">
+      </div>
+      <div class="col">
+        <p class="text-success">
+            <strong>
+                NUPY
+            </strong>
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.nupy}}
+                </p>            
+        <p class="text-success">
+            <strong>
+                Nama Pegawai
+            </strong>
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.nama_pegawai}}
+                </p>  
+        <p class="text-success">
+            <strong>
+                Jenis Kelamin
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.get_jenis_kelamin_display}}
+                </p>  
+        <p class="text-success">
+            <strong>
+                Tempat dan Tanggal Lahir
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.tempat_lahir}} {{user.pegawai.tanggal_lahir}}
+                </p>  
+        <p class="text-success">
+            <strong>
+               Nomor Telpon
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.no_telpon}}
+                </p>  
+        <p class="text-success">
+            <strong>
+                Alamat
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.alamat}}
+                </p>  
+        <p class="text-success">
+            <strong>
+               Tanggal Masuk 
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.tanggal_masuk}}
+                </p>  
+        <p class="text-success">
+            <strong>
+                Keterangan Tambahan
+            </strong>                
+            </p>
+            <p class="text-dark">
+                {{user.pegawai.ket_pegawai}}
+                </p>   
+      </div>
+      <div class="col">
+        <p class="text-success">
+            <strong>
+                Jabatan
+            </strong>
+            </p>
+            {% for jabatan in user.pegawai.detail_jabatan_set.all%}
+            {% if jabatan.status_jabatan == '1' %}
+            <p class="text-dark">
+              {{jabatan.jabatan.nama_jabatan}}
+                </p>
+            {%endif%}
+            {%endfor%}
+        <p class="text-success">
+            <strong>
+                Riwayat Pendidikan
+            </strong>
+            </p>
+            {% for rp in user.pegawai.riwayat_pendidikan_set.all%}
+            <p class="text-dark">
+                {{rp.pendidikan.pendidikan}} {{rp.jurusan.jurusan}} {{rp.universitas.universitas}}
+                </p> 
+                {%endfor%}
+      </div>
+    </div>
+  </div>
